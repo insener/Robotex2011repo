@@ -1,0 +1,942 @@
+Archive member included because of file (symbol)
+
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(addfl64.o)
+                              printf.o (__adddf3)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(cmpfl64.o)
+                              printf.o (__ltdf2)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f32tof64.o)
+                              string.o (__extendsfdf2)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64tof32.o)
+                              string.o (__truncdfsf2)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64toi32z.o)
+                              printf.o (__fixdfsi)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(fpmult.o)
+                              string.o (__mulsf3)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(i32tof64.o)
+                              printf.o (__floatsidf)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(mulfl64.o)
+                              printf.o (__muldf3)
+c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(subfl64.o)
+                              printf.o (__subdf3)
+
+Allocating common symbols
+Common symbol       size              file
+
+imgWidth            0x4               srv.o
+j                   0x4               srv.o
+_videoBufPointer    0x4               camera.o
+Y2                  0x80              jpeg.o
+blob_display_flag   0x4               srv.o
+x_acc               0x4               srv.o
+i                   0x4               srv.o
+_imgHeigth          0x4               colors.o
+blobcnt             0xfc              colors.o
+segmentation_flag   0x4               srv.o
+_invertFlag         0x4               camera.o
+move_stop_time      0x4               srv.o
+Temp                0x80              jpeg.o
+Cqt                 0x40              jpeg.o
+ymax                0x44              colors.o
+blobx1              0xfc              colors.o
+pwm2_init           0x4               srv.o
+Y3                  0x80              jpeg.o
+base                0x8               malloc.o
+sonar_data          0x14              srv.o
+y_acc0              0x4               srv.o
+Y4                  0x80              jpeg.o
+umax                0x44              colors.o
+ICqt                0x80              jpeg.o
+_dlist2             0xc               camera.o
+_videoBuffer        0x20              camera.o
+hist0               0x400             colors.o
+heap_end            0x4               malloc.o
+move_start_time     0x4               srv.o
+_imgHead            0x7               camera.o
+y_acc               0x4               srv.o
+output_start        0x4               srv.o
+hist1               0x400             colors.o
+lcount              0x4               srv.o
+pwm1_init           0x4               srv.o
+image_size          0x4               srv.o
+ILqt                0x80              jpeg.o
+heap_start          0x4               malloc.o
+pwm1_mode           0x4               srv.o
+x_center            0x4               srv.o
+blobix              0xfc              colors.o
+edge_thresh         0x4               srv.o
+horizon_detect_flag
+                    0x4               srv.o
+master              0x4               srv.o
+bloby2              0xfc              colors.o
+mean                0xc               colors.o
+base_speed          0x4               srv.o
+rspeed2             0x4               srv.o
+lspeed              0x4               srv.o
+vmax                0x44              colors.o
+CR                  0x80              jpeg.o
+overlay_flag        0x4               srv.o
+lspeed2             0x4               srv.o
+err1                0x4               srv.o
+_dlist1             0xc               camera.o
+cp                  0x4               srv.o
+Lqt                 0x40              jpeg.o
+_debugInfo          0x4               srv.o
+output_end          0x4               srv.o
+CB                  0x80              jpeg.o
+pwm2_mode           0x4               srv.o
+_processTime        0x4               srv.o
+obstacle_detect_flag
+                    0x4               srv.o
+fdct_temp           0x80              jpeg.o
+blob_display_num    0x4               srv.o
+framecount          0x4               srv.o
+_coreTimerCount     0x4               timer.o
+_imgWidth           0x4               camera.o
+vmin                0x44              colors.o
+heap_ptr            0x4               malloc.o
+bloby1              0xfc              colors.o
+rcount              0x4               srv.o
+x_acc0              0x4               srv.o
+read_format         0x4               jpeg.o
+edge_detect_flag    0x4               srv.o
+encoder_flag        0x4               srv.o
+imgHeight           0x4               srv.o
+blobx2              0xfc              colors.o
+move_time_mS        0x4               srv.o
+y_center            0x4               srv.o
+_imgHeader          0xb               srv.o
+_qualityFactor      0x4               jpeg.o
+xwd_init            0x4               srv.o
+_imgHeight          0x4               camera.o
+ymin                0x44              colors.o
+umin                0x44              colors.o
+rspeed              0x4               srv.o
+base_speed2         0x4               srv.o
+frame_diff_flag     0x4               srv.o
+ix                  0x4               srv.o
+Y1                  0x80              jpeg.o
+robot_moving        0x4               srv.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ram              0x00000000         0x02000000         xrw
+l1code           0xffa00000         0x00010000         x
+l1data_a         0xff800000         0x00008000         rw
+l1data_b         0xff904000         0x00004000         rw
+scratchpad       0xffb00000         0x00001000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.sdram.text
+ camera.o(.sdram.text)
+ httpd.o(.sdram.text)
+ i2c.o(.sdram.text)
+ stm_m25p32.o(.sdram.text)
+ printf.o(.sdram.text)
+ *(.gnu.warning)
+
+.l1code         0xffa00000     0x3d10
+ crt0.o(.text)
+ .text          0xffa00000      0x178 crt0.o
+                0xffa000fc                idle_loop
+                0xffa00000                start
+ main.o(.text)
+ .text          0xffa00178      0x20c main.o
+                0xffa00178                main
+ math.o(.text)
+ .text          0xffa00384      0x200 math.o
+                0xffa00450                __umodsi3
+                0xffa00482                __divsi3
+                0xffa00384                __udivsi3
+ malloc.o(.text)
+ .text          0xffa00584      0x1a4 malloc.o
+                0xffa00660                morecore
+                0xffa005d8                free
+                0xffa00584                init_heap
+                0xffa005c4                sbrk
+                0xffa006a4                malloc
+ srv.o(.text)
+ .text          0xffa00728      0xa48 srv.o
+                0xffa009d8                process_i2c
+                0xffa00948                srv_overlayOn
+                0xffa00bec                srv_sendRawYUV
+                0xffa00c68                srv_sendRawYUVVideo
+                0xffa00ca0                serial_out_flashbuffer
+                0xffa008c4                srv_relayOff
+                0xffa008d8                initPWM
+                0xffa00d08                srv_sendFrame
+                0xffa008cc                srv_relayOn
+                0xffa01130                srv_initVariables
+                0xffa009c8                show_stack_ptr
+                0xffa009b0                show_heap_ptr
+                0xffa00bc4                srv_changeImageQuality
+                0xffa00754                clear_sdram
+                0xffa0077c                stack_remaining
+                0xffa00828                setPWM
+                0xffa0092c                srv_initPWM
+                0xffa00960                check_battery
+                0xffa00988                serial_out_version
+                0xffa01114                serial_out_time
+                0xffa00788                set_caption
+                0xffa00728                reset_cpu
+                0xffa010bc                srv_grabProcessAndSendFrame
+                0xffa00930                srv_overlayOff
+ uart.o(.text)
+ .text          0xffa01170      0x3a0 uart.o
+                0xffa01364                uart_uart1SendChar
+                0xffa011a8                uart_initUart0
+                0xffa01330                uart0GetChar
+                0xffa012f0                uart0SendChars
+                0xffa013d8                uart_uart1GetCh
+                0xffa01314                uart0GetCh
+                0xffa01388                uart_uart1SendString
+                0xffa012c4                uart0SendString
+                0xffa01230                uart_initUart1
+                0xffa01294                uart0SendChar
+                0xffa013b4                uart_uart1SendChars
+                0xffa0120c                uart0_CTS
+                0xffa01170                waituntilNS
+                0xffa01354                uart0Signal
+                0xffa013f4                uart_uart1GetChar
+                0xffa01428                printNumber
+                0xffa01418                uart_uart1Signal
+ colors.o(.text)
+ .text          0xffa01510     0x15ec colors.o
+                0xffa01a80                vmean
+                0xffa01dd8                edge_detect
+                0xffa01cf8                vfind
+                0xffa01f84                svs_segcode
+                0xffa02104                vhorizon
+                0xffa01b44                color_segment
+                0xffa024bc                addvect
+                0xffa026f8                markGolfBall
+                0xffa0155c                vblob
+                0xffa025e0                addbox
+                0xffa02424                svs_segview
+                0xffa026a0                setPixel
+                0xffa01510                index
+                0xffa02a88                init_colors
+                0xffa0236c                vscan
+                0xffa019b8                vhist
+                0xffa02538                addline
+                0xffa01524                vpix
+                0xffa02878                algorithm_searchGolfBalls
+ jpeg.o(.text)
+ .text          0xffa02afc      0xddc jpeg.o
+                0xffa036f4                DCT
+                0xffa030dc                close_bitstream
+                0xffa03708                encodeMCU
+                0xffa02c24                huffman
+                0xffa03150                write_markers
+                0xffa03370                initializeQuantizationTables
+                0xffa03540                read_422_format
+                0xffa02afc                initialization
+                0xffa02c04                levelshift
+                0xffa03804                jpeg_encodeImage
+                0xffa02bd4                jpeg_setQualityFactor
+                0xffa03470                quantization
+                0xffa034c0                read_400_format
+ r8x8dct.o(.text)
+ .text          0xffa038d8       0xf0 r8x8dct.o
+                0xffa038d8                _r8x8dct
+ uart.o(.text)
+ setjmp.o(.text)
+ .text          0xffa039c8      0x184 setjmp.o
+                0xffa039c8                longjmp
+                0xffa03a90                setjmp
+ io.o(.text)
+ .text          0xffa03b4c      0x1c4 io.o
+                0xffa03c58                io_LED2Set
+                0xffa03c88                INTERRUPT_ballSensor
+                0xffa03c68                io_LED2Clear
+                0xffa03c78                io_LED2Toggle
+                0xffa03bcc                io_getBallSensorCount
+                0xffa03c14                io_disableBallSensorInterrupt
+                0xffa03b4c                io_initPeriphery
+                0xffa03bf4                io_enableBallSensorInterrupt
+                0xffa03c28                io_LED1Set
+                0xffa03c38                io_LED1Clear
+                0xffa03c48                io_LED1Toggle
+
+.text           0x00000000     0x4b24
+ .text          0x00000000      0x598 camera.o
+                0x00000184                camera_getImageHeader
+                0x00000328                camera_reset
+                0x000000d0                moveInvertedImage
+                0x000002e8                camera_invertVideo
+                0x000000a8                moveImage
+                0x000002a8                camera_restoreVideo
+                0x00000000                initializeHW
+                0x00000168                camera_getFrameSize
+                0x0000020c                camera_grabVideo
+                0x00000120                camera_run
+                0x00000144                camera_stop
+                0x0000019c                camera_grabFrame
+                0x000004d0                camera_setup
+ .text          0x00000598     0x189c httpd.o
+                0x000008e0                httpd_request
+                0x00000598                clean_buffer
+                0x00000784                adminBodyBuilder
+                0x00000850                read_double_sector
+ .text          0x00001e34      0x388 i2c.o
+                0x00001e34                i2c_write
+                0x00001fcc                i2c_read
+                0x000020c4                i2c_slowRead
+                0x00001f04                i2c_writeX
+ .text          0x000021bc      0x4d4 stm_m25p32.o
+                0x00002298                SetupSPI
+                0x00002358                spi_read
+                0x000023f0                Wait_For_WEL
+                0x00002278                SPI_OFF
+                0x00002458                WriteFlash
+                0x000025c4                spi_write
+                0x000021c8                spi_init_r
+                0x00002548                EraseBlock
+                0x000023b8                Wait_For_Status
+                0x00002214                GetSectorNumber
+                0x000024f4                WriteData
+                0x000021bc                spi_init_f
+                0x00002374                ReadStatusRegister
+                0x00002424                SendSingleCommand
+                0x000022c8                ReadData
+                0x000021d4                Wait_For_SPIF
+                0x0000223c                udelay
+ .text          0x00002690      0x5d4 printf.o
+                0x00002c2c                sprintf
+                0x00002690                my_strlen
+                0x000026b8                dbl2stri
+                0x00002c48                printf
+ .text          0x00002c64       0xd0 init.o
+                0x00002c64                initcode
+ .text          0x00002d34      0x72c string.o
+                0x00002d34                strcmp
+                0x00003060                atoi_b10
+                0x00002f80                memcpy2
+                0x00003078                atof
+                0x00002db0                strncpy
+                0x00002de8                atoi
+                0x00002f64                memcpy
+                0x00002fa4                memset
+                0x00003290                strtoksafe
+                0x00002ff8                ctoi
+                0x00002ecc                itoa
+                0x00003438                strdup
+                0x00002e94                reverse
+                0x000031e8                strpbrk
+                0x00003418                getUnaligned32
+                0x00003344                strnstr
+                0x00002d88                strchr
+                0x00002da0                strcpy
+                0x00003220                strtok
+                0x00002d54                strncmp
+                0x00002f58                isdigit
+                0x00002e74                strlen
+                0x00003010                atoi_b16
+                0x00002fb8                memmove
+                0x000033a8                strReplace
+                0x000032f4                strstr
+ .text          0x00003460      0x4f8 sdcard.o
+                0x0000360c                GetCardParams
+                0x000034a4                CloseSD
+                0x00003830                ReadMultipleBlocks
+                0x000036ec                EraseBlocks
+                0x000038c8                WriteMultipleBlocks
+                0x00003460                InitSD
+                0x00003588                GetToken
+                0x00003744                WriteSector
+                0x000035c4                CardInit
+                0x000037c8                ReadSector
+                0x00003504                SendCommand
+                0x000034b4                WriteByte
+ .text          0x00003958      0x1b8 rtc.o
+                0x000039fc                rtc_delayMS
+                0x00003978                rtc_read
+                0x00003a2c                rtc_delayUS
+                0x00003958                rtc_init
+                0x000039ec                rtc_clear
+                0x00003a9c                rtc_delayNS
+ .text          0x00003b10       0xc8 motion.o
+                0x00003b98                motion_moveStraight
+                0x00003b10                motion_moveXY
+                0x00003b44                motion_stop
+                0x00003b1c                sendMotion
+                0x00003b50                motion_moveSide
+ .text          0x00003bd8      0x6bc timer.o
+                0x00003c38                timer_configureTimer
+                0x000041cc                INTERRUPT_coreTimer
+                0x00003f3c                timer_enableTimer
+                0x00004050                timer_init
+                0x000041a8                timer_getCoreTimerValue
+                0x00004094                timer_disableTimer
+                0x00003bd8                initializeCoreTimer
+                0x000041f0                INTERRUPT_timer
+                0x00003d80                timer_setTimerWidth
+                0x00003df4                timer_configureTimerInterrupt
+ .text          0x00004294       0x64 soccer.o
+                0x00004294                soccer_run
+ .text          0x000042f8      0x2b0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(addfl64.o)
+                0x000042fa                __adddf3_inregs
+                0x000042f8                __adddf3
+ .text          0x000045a8       0x80 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(cmpfl64.o)
+                0x000045a8                __ledf2
+                0x000045a8                __nedf2
+                0x000045a8                __gedf2
+                0x000045a8                __gtdf2
+                0x000045a8                __eqdf2
+                0x000045a8                __cmpdf2
+                0x000045a8                __ltdf2
+ .text          0x00004628       0x44 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f32tof64.o)
+                0x00004628                __extendsfdf2
+ .text          0x0000466c       0x80 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64tof32.o)
+                0x0000466c                __truncdfsf2
+ .text          0x000046ec       0x74 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64toi32z.o)
+                0x000046ec                __fixdfsi
+ .text          0x00004760      0x130 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(fpmult.o)
+                0x00004760                __mulsf3
+ .text          0x00004890       0x3c c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(i32tof64.o)
+                0x00004890                __floatsidf
+ .text          0x000048cc      0x250 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(mulfl64.o)
+                0x000048cc                __muldf3
+ .text          0x00004b1c        0x8 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(subfl64.o)
+                0x00004b1c                __subdf3
+
+.l1data         0xff800000     0x2404
+ *(.data)
+ .data          0xff800000      0x610 camera.o
+ .data          0xff800610     0x10a8 httpd.o
+                0xff800610                adminHtml
+ .data          0xff8016b8        0x0 i2c.o
+ .data          0xff8016b8        0x0 stm_m25p32.o
+ .data          0xff8016b8        0x0 printf.o
+ .data          0xff8016b8        0x0 crt0.o
+ .data          0xff8016b8        0x0 main.o
+ .data          0xff8016b8        0x0 math.o
+ .data          0xff8016b8        0x0 malloc.o
+ .data          0xff8016b8      0x45c srv.o
+                0xff801ac0                version_string
+                0xff8016c0                font8x8
+                0xff8016b8                fontmask
+                0xff801af0                frame
+                0xff801b10                rand_seed
+ .data          0xff801b14        0x0 uart.o
+ .data          0xff801b14        0x0 colors.o
+ .data          0xff801b14      0x8f0 jpeg.o
+                0xff802344                zigzag_table
+                0xff801b6c                chrominance_dc_size_table
+                0xff801e0c                chrominance_ac_code_table
+                0xff801cc8                luminance_ac_size_table
+                0xff801b84                luminance_ac_code_table
+                0xff801b3c                luminance_dc_size_table
+                0xff801b54                chrominance_dc_code_table
+                0xff802384                luminance_quant_table
+                0xff802194                markerdata
+                0xff801b24                luminance_dc_code_table
+                0xff801b14                fdct_coeff
+                0xff8023c4                chrominance_quant_table
+                0xff802094                bitsize
+                0xff801f50                chrominance_ac_size_table
+ .data          0xff802404        0x0 r8x8dct.o
+ .data          0xff802404        0x0 setjmp.o
+ .data          0xff802404        0x0 io.o
+ .data          0xff802404        0x0 init.o
+ .data          0xff802404        0x0 string.o
+ .data          0xff802404        0x0 sdcard.o
+ .data          0xff802404        0x0 rtc.o
+ .data          0xff802404        0x0 motion.o
+ .data          0xff802404        0x0 timer.o
+ .data          0xff802404        0x0 soccer.o
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(addfl64.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(cmpfl64.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f32tof64.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64tof32.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64toi32z.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(fpmult.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(i32tof64.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(mulfl64.o)
+ .data          0xff802404        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(subfl64.o)
+ *(.l1data)
+ *(.l1data.a)
+
+.l1data.b
+ *(.l1data.b)
+
+.rodata         0xff802404      0xc44
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata.str1.4
+                0xff802404       0x1f camera.o
+                                 0x20 (size before relaxing)
+ *fill*         0xff802423        0x1 00
+ .rodata.str1.4
+                0xff802424      0x481 httpd.o
+                                0x494 (size before relaxing)
+ *fill*         0xff8028a5        0x3 00
+ .rodata        0xff8028a8      0x2a4 httpd.o
+ .rodata.str1.4
+                0xff802b4c        0x7 printf.o
+                                  0x8 (size before relaxing)
+ *fill*         0xff802b53        0x1 00
+ .rodata        0xff802b54       0x84 printf.o
+ .rodata.str1.4
+                0xff802bd8       0x13 main.o
+                                 0x14 (size before relaxing)
+ *fill*         0xff802beb        0x1 00
+ .rodata        0xff802bec      0x15c main.o
+ .rodata.str1.4
+                0xff802d48      0x12c srv.o
+                                0x134 (size before relaxing)
+ .rodata        0xff802e74       0xac srv.o
+ .rodata        0xff802f20       0x10 uart.o
+ .rodata        0xff802f30       0x78 colors.o
+ .rodata        0xff802fa8       0xa0 timer.o
+
+.data
+ *(.data .data.* .gnu.linkonce.d.*)
+
+.ctors
+ *crtbegin*.o(.ctors)
+ *(EXCLUDE_FILE(*crtend*.o) .ctors)
+ *(SORT(.ctors.*))
+ *(.ctors)
+
+.dtors
+ *crtbegin*.o(.dtors)
+ *(EXCLUDE_FILE(*crtend*.o) .dtors)
+ *(SORT(.dtors.*))
+ *(.dtors)
+
+.sdram.bss      0x00004b24        0x0
+                0x00004b24                __sdram_bss_start = .
+ *(.bss.sdram)
+                0x00004b24                . = ALIGN (0x4)
+                0x00004b24                __sdram_bss_end = .
+
+.bss            0xff904000     0x19a8
+                0xff904000                __bss_start = .
+ *(.dynbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0xff904000        0x0 camera.o
+ .bss           0xff904000      0x280 httpd.o
+ .bss           0xff904280        0x0 i2c.o
+ .bss           0xff904280        0x0 stm_m25p32.o
+ .bss           0xff904280       0x54 printf.o
+ .bss           0xff9042d4        0x0 crt0.o
+ .bss           0xff9042d4        0x0 main.o
+ .bss           0xff9042d4        0x0 math.o
+ .bss           0xff9042d4        0x4 malloc.o
+                0xff9042d4                allocp
+ .bss           0xff9042d8        0x8 srv.o
+                0xff9042d8                sonar_flag
+                0xff9042dc                uart1_flag
+ .bss           0xff9042e0        0x0 uart.o
+ .bss           0xff9042e0       0x50 colors.o
+ .bss           0xff904330        0x8 jpeg.o
+                0xff904330                lcode
+                0xff904334                bitindex
+ .bss           0xff904338        0x0 r8x8dct.o
+ .bss           0xff904338        0x0 setjmp.o
+ .bss           0xff904338        0x4 io.o
+                0xff904338                _ballSensorCount
+ .bss           0xff90433c        0x0 init.o
+ .bss           0xff90433c        0x4 string.o
+ .bss           0xff904340        0x0 sdcard.o
+ .bss           0xff904340        0x0 rtc.o
+ .bss           0xff904340        0x0 motion.o
+ .bss           0xff904340        0x0 timer.o
+ .bss           0xff904340        0xc soccer.o
+                0xff904340                coreTimerCurrent
+                0xff904348                systemDevider
+                0xff904344                coreTimerLast
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(addfl64.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(cmpfl64.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f32tof64.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64tof32.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(f64toi32z.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(fpmult.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(i32tof64.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(mulfl64.o)
+ .bss           0xff90434c        0x0 c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a(subfl64.o)
+ *(COMMON)
+ COMMON         0xff90434c       0x50 camera.o
+                0xff90434c                _videoBufPointer
+                0xff904350                _invertFlag
+                0xff904354                _dlist2
+                0xff904360                _videoBuffer
+                0xff904380                _imgHead
+                0xff904388                _dlist1
+                0xff904394                _imgWidth
+                0xff904398                _imgHeight
+ COMMON         0xff90439c       0x14 malloc.o
+                0xff90439c                base
+                0xff9043a4                heap_end
+                0xff9043a8                heap_start
+                0xff9043ac                heap_ptr
+ COMMON         0xff9043b0       0xdc srv.o
+                0xff9043b0                imgWidth
+                0xff9043b4                j
+                0xff9043b8                blob_display_flag
+                0xff9043bc                x_acc
+                0xff9043c0                i
+                0xff9043c4                segmentation_flag
+                0xff9043c8                move_stop_time
+                0xff9043cc                pwm2_init
+                0xff9043d0                sonar_data
+                0xff9043e4                y_acc0
+                0xff9043e8                move_start_time
+                0xff9043ec                y_acc
+                0xff9043f0                output_start
+                0xff9043f4                lcount
+                0xff9043f8                pwm1_init
+                0xff9043fc                image_size
+                0xff904400                pwm1_mode
+                0xff904404                x_center
+                0xff904408                edge_thresh
+                0xff90440c                horizon_detect_flag
+                0xff904410                master
+                0xff904414                base_speed
+                0xff904418                rspeed2
+                0xff90441c                lspeed
+                0xff904420                overlay_flag
+                0xff904424                lspeed2
+                0xff904428                err1
+                0xff90442c                cp
+                0xff904430                _debugInfo
+                0xff904434                output_end
+                0xff904438                pwm2_mode
+                0xff90443c                _processTime
+                0xff904440                obstacle_detect_flag
+                0xff904444                blob_display_num
+                0xff904448                framecount
+                0xff90444c                rcount
+                0xff904450                x_acc0
+                0xff904454                edge_detect_flag
+                0xff904458                encoder_flag
+                0xff90445c                imgHeight
+                0xff904460                move_time_mS
+                0xff904464                y_center
+                0xff904468                _imgHeader
+                0xff904474                xwd_init
+                0xff904478                rspeed
+                0xff90447c                base_speed2
+                0xff904480                frame_diff_flag
+                0xff904484                ix
+                0xff904488                robot_moving
+ COMMON         0xff90448c      0xf90 colors.o
+                0xff90448c                _imgHeigth
+                0xff904490                blobcnt
+                0xff90458c                ymax
+                0xff9045d0                blobx1
+                0xff9046cc                umax
+                0xff904710                hist0
+                0xff904b10                hist1
+                0xff904f10                blobix
+                0xff90500c                bloby2
+                0xff905108                mean
+                0xff905114                vmax
+                0xff905158                vmin
+                0xff90519c                bloby1
+                0xff905298                blobx2
+                0xff905394                ymin
+                0xff9053d8                umin
+ COMMON         0xff90541c      0x588 jpeg.o
+                0xff90541c                Y2
+                0xff90549c                Temp
+                0xff90551c                Cqt
+                0xff90555c                Y3
+                0xff9055dc                Y4
+                0xff90565c                ICqt
+                0xff9056dc                ILqt
+                0xff90575c                CR
+                0xff9057dc                Lqt
+                0xff90581c                CB
+                0xff90589c                fdct_temp
+                0xff90591c                read_format
+                0xff905920                _qualityFactor
+                0xff905924                Y1
+ COMMON         0xff9059a4        0x4 timer.o
+                0xff9059a4                _coreTimerCount
+                0xff9059a8                . = ALIGN (0x4)
+                0xff9059a8                __bss_end = .
+                0xff903ffc                . = 0xff903ffc
+                0xff903ffc                PROVIDE (_supervisor_stack, .)
+LOAD main.o
+LOAD init.o
+LOAD srv.o
+LOAD uart.o
+LOAD camera.o
+LOAD jpeg.o
+LOAD i2c.o
+LOAD stm_m25p32.o
+LOAD httpd.o
+LOAD colors.o
+LOAD malloc.o
+LOAD string.o
+LOAD printf.o
+LOAD sdcard.o
+LOAD rtc.o
+LOAD motion.o
+LOAD io.o
+LOAD timer.o
+LOAD soccer.o
+LOAD r8x8dct.o
+LOAD math.o
+LOAD setjmp.o
+LOAD crt0.o
+LOAD c:\program files\analog devices\gnu toolchain\2008r1.5\elf\bin\../bfin-elf/lib\libbffastfp.a
+OUTPUT(srv1.bin elf32-bfin)
+
+.debug_abbrev   0x00000000     0x1890
+ .debug_abbrev  0x00000000      0x1d1 camera.o
+ .debug_abbrev  0x000001d1      0x24d httpd.o
+ .debug_abbrev  0x0000041e       0x8a i2c.o
+ .debug_abbrev  0x000004a8      0x1d8 stm_m25p32.o
+ .debug_abbrev  0x00000680      0x1d3 printf.o
+ .debug_abbrev  0x00000853       0xb1 main.o
+ .debug_abbrev  0x00000904      0x14c malloc.o
+ .debug_abbrev  0x00000a50      0x215 srv.o
+ .debug_abbrev  0x00000c65      0x10f uart.o
+ .debug_abbrev  0x00000d74      0x236 colors.o
+ .debug_abbrev  0x00000faa      0x19b jpeg.o
+ .debug_abbrev  0x00001145       0x89 io.o
+ .debug_abbrev  0x000011ce       0x45 init.o
+ .debug_abbrev  0x00001213      0x222 string.o
+ .debug_abbrev  0x00001435       0xf3 sdcard.o
+ .debug_abbrev  0x00001528       0xd7 rtc.o
+ .debug_abbrev  0x000015ff       0xce motion.o
+ .debug_abbrev  0x000016cd      0x173 timer.o
+ .debug_abbrev  0x00001840       0x50 soccer.o
+
+.debug_info     0x00000000     0x5c8a
+ .debug_info    0x00000000      0x5ec camera.o
+ .debug_info    0x000005ec      0xb7e httpd.o
+ .debug_info    0x0000116a      0x1b5 i2c.o
+ .debug_info    0x0000131f      0x604 stm_m25p32.o
+ .debug_info    0x00001923      0x4de printf.o
+ .debug_info    0x00001e01      0x102 main.o
+ .debug_info    0x00001f03      0x23a malloc.o
+ .debug_info    0x0000213d      0x921 srv.o
+ .debug_info    0x00002a5e      0x3bd uart.o
+ .debug_info    0x00002e1b      0xf1f colors.o
+ .debug_info    0x00003d3a      0xb25 jpeg.o
+ .debug_info    0x0000485f      0x12f io.o
+ .debug_info    0x0000498e       0x64 init.o
+ .debug_info    0x000049f2      0x8e9 string.o
+ .debug_info    0x000052db      0x391 sdcard.o
+ .debug_info    0x0000566c      0x13a rtc.o
+ .debug_info    0x000057a6      0x1df motion.o
+ .debug_info    0x00005985      0x286 timer.o
+ .debug_info    0x00005c0b       0x7f soccer.o
+
+.debug_line     0x00000000     0x1d29
+ .debug_line    0x00000000      0x16e camera.o
+ .debug_line    0x0000016e      0x46e httpd.o
+ .debug_line    0x000005dc       0xd2 i2c.o
+ .debug_line    0x000006ae      0x1ac stm_m25p32.o
+ .debug_line    0x0000085a      0x1a1 printf.o
+ .debug_line    0x000009fb       0xcd main.o
+ .debug_line    0x00000ac8       0xa6 malloc.o
+ .debug_line    0x00000b6e      0x215 srv.o
+ .debug_line    0x00000d83       0xeb uart.o
+ .debug_line    0x00000e6e      0x4a1 colors.o
+ .debug_line    0x0000130f      0x323 jpeg.o
+ .debug_line    0x00001632       0x6d io.o
+ .debug_line    0x0000169f       0x53 init.o
+ .debug_line    0x000016f2      0x1eb string.o
+ .debug_line    0x000018dd      0x10b sdcard.o
+ .debug_line    0x000019e8       0x6e rtc.o
+ .debug_line    0x00001a56       0x76 motion.o
+ .debug_line    0x00001acc      0x21b timer.o
+ .debug_line    0x00001ce7       0x42 soccer.o
+
+.debug_frame    0x00000000     0x1804
+ .debug_frame   0x00000000      0x164 camera.o
+ .debug_frame   0x00000164       0xf8 httpd.o
+ .debug_frame   0x0000025c       0x50 i2c.o
+ .debug_frame   0x000002ac      0x214 stm_m25p32.o
+ .debug_frame   0x000004c0      0x110 printf.o
+ .debug_frame   0x000005d0       0x38 main.o
+ .debug_frame   0x00000608       0x94 malloc.o
+ .debug_frame   0x0000069c      0x260 srv.o
+ .debug_frame   0x000008fc      0x194 uart.o
+ .debug_frame   0x00000a90      0x31c colors.o
+ .debug_frame   0x00000dac      0x1c4 jpeg.o
+ .debug_frame   0x00000f70      0x14c io.o
+ .debug_frame   0x000010bc       0xa4 init.o
+ .debug_frame   0x00001160      0x268 string.o
+ .debug_frame   0x000013c8      0x1a8 sdcard.o
+ .debug_frame   0x00001570       0x90 rtc.o
+ .debug_frame   0x00001600       0x68 motion.o
+ .debug_frame   0x00001668      0x164 timer.o
+ .debug_frame   0x000017cc       0x38 soccer.o
+
+.debug_loc      0x00000000     0x8630
+ .debug_loc     0x00000000      0x394 camera.o
+ .debug_loc     0x00000394     0x1814 httpd.o
+ .debug_loc     0x00001ba8      0x2fc i2c.o
+ .debug_loc     0x00001ea4      0x89e stm_m25p32.o
+ .debug_loc     0x00002742      0xaef printf.o
+ .debug_loc     0x00003231       0x80 main.o
+ .debug_loc     0x000032b1      0x1e1 malloc.o
+ .debug_loc     0x00003492      0x5b8 srv.o
+ .debug_loc     0x00003a4a      0x578 uart.o
+ .debug_loc     0x00003fc2     0x1614 colors.o
+ .debug_loc     0x000055d6     0x1506 jpeg.o
+ .debug_loc     0x00006adc      0x135 io.o
+ .debug_loc     0x00006c11      0x122 init.o
+ .debug_loc     0x00006d33      0xd8a string.o
+ .debug_loc     0x00007abd      0x6cb sdcard.o
+ .debug_loc     0x00008188      0x12d rtc.o
+ .debug_loc     0x000082b5       0xb6 motion.o
+ .debug_loc     0x0000836b      0x29a timer.o
+ .debug_loc     0x00008605       0x2b soccer.o
+
+.debug_pubnames
+                0x00000000     0x14fd
+ .debug_pubnames
+                0x00000000      0x18b camera.o
+ .debug_pubnames
+                0x0000018b       0x6f httpd.o
+ .debug_pubnames
+                0x000001fa       0x4d i2c.o
+ .debug_pubnames
+                0x00000247      0x120 stm_m25p32.o
+ .debug_pubnames
+                0x00000367       0x44 printf.o
+ .debug_pubnames
+                0x000003ab       0x1b main.o
+ .debug_pubnames
+                0x000003c6       0x87 malloc.o
+ .debug_pubnames
+                0x0000044d      0x505 srv.o
+ .debug_pubnames
+                0x00000952      0x156 uart.o
+ .debug_pubnames
+                0x00000aa8      0x1c8 colors.o
+ .debug_pubnames
+                0x00000c70      0x2fb jpeg.o
+ .debug_pubnames
+                0x00000f6b      0x116 io.o
+ .debug_pubnames
+                0x00001081       0x1f init.o
+ .debug_pubnames
+                0x000010a0      0x144 string.o
+ .debug_pubnames
+                0x000011e4       0xd1 sdcard.o
+ .debug_pubnames
+                0x000012b5       0x6a rtc.o
+ .debug_pubnames
+                0x0000131f       0x6f motion.o
+ .debug_pubnames
+                0x0000138e      0x115 timer.o
+ .debug_pubnames
+                0x000014a3       0x5a soccer.o
+
+.debug_aranges  0x00000000      0x260
+ .debug_aranges
+                0x00000000       0x20 camera.o
+ .debug_aranges
+                0x00000020       0x20 httpd.o
+ .debug_aranges
+                0x00000040       0x20 i2c.o
+ .debug_aranges
+                0x00000060       0x20 stm_m25p32.o
+ .debug_aranges
+                0x00000080       0x20 printf.o
+ .debug_aranges
+                0x000000a0       0x20 main.o
+ .debug_aranges
+                0x000000c0       0x20 malloc.o
+ .debug_aranges
+                0x000000e0       0x20 srv.o
+ .debug_aranges
+                0x00000100       0x20 uart.o
+ .debug_aranges
+                0x00000120       0x20 colors.o
+ .debug_aranges
+                0x00000140       0x20 jpeg.o
+ .debug_aranges
+                0x00000160       0x20 io.o
+ .debug_aranges
+                0x00000180       0x20 init.o
+ .debug_aranges
+                0x000001a0       0x20 string.o
+ .debug_aranges
+                0x000001c0       0x20 sdcard.o
+ .debug_aranges
+                0x000001e0       0x20 rtc.o
+ .debug_aranges
+                0x00000200       0x20 motion.o
+ .debug_aranges
+                0x00000220       0x20 timer.o
+ .debug_aranges
+                0x00000240       0x20 soccer.o
+
+.debug_str      0x00000000     0x1be9
+ .debug_str     0x00000000      0x2bd camera.o
+                                0x2dc (size before relaxing)
+ .debug_str     0x000002bd      0x499 httpd.o
+                                0x556 (size before relaxing)
+ .debug_str     0x00000756       0x51 i2c.o
+                                 0xcd (size before relaxing)
+ .debug_str     0x000007a7      0x263 stm_m25p32.o
+                                0x314 (size before relaxing)
+ .debug_str     0x00000a0a       0xd5 printf.o
+                                0x160 (size before relaxing)
+ .debug_str     0x00000adf       0x27 main.o
+                                 0xcb (size before relaxing)
+ .debug_str     0x00000b06       0x63 malloc.o
+                                 0xd6 (size before relaxing)
+ .debug_str     0x00000b69      0x310 srv.o
+                                0x4e4 (size before relaxing)
+ .debug_str     0x00000e79      0x14c uart.o
+                                0x1e0 (size before relaxing)
+ .debug_str     0x00000fc5      0x20b colors.o
+                                0x32b (size before relaxing)
+ .debug_str     0x000011d0      0x456 jpeg.o
+                                0x533 (size before relaxing)
+ .debug_str     0x00001626       0xd9 io.o
+                                0x133 (size before relaxing)
+ .debug_str     0x000016ff       0x43 init.o
+                                 0x8a (size before relaxing)
+ .debug_str     0x00001742      0x138 string.o
+                                0x1db (size before relaxing)
+ .debug_str     0x0000187a       0xd9 sdcard.o
+                                0x145 (size before relaxing)
+ .debug_str     0x00001953       0x46 rtc.o
+                                 0xa0 (size before relaxing)
+ .debug_str     0x00001999       0xae motion.o
+                                0x120 (size before relaxing)
+ .debug_str     0x00001a47      0x161 timer.o
+                                0x210 (size before relaxing)
+ .debug_str     0x00001ba8       0x41 soccer.o
+                                 0x95 (size before relaxing)
+
+.comment        0x00000000      0x214
+ .comment       0x00000000       0x1c camera.o
+ .comment       0x0000001c       0x1c httpd.o
+ .comment       0x00000038       0x1c i2c.o
+ .comment       0x00000054       0x1c stm_m25p32.o
+ .comment       0x00000070       0x1c printf.o
+ .comment       0x0000008c       0x1c main.o
+ .comment       0x000000a8       0x1c malloc.o
+ .comment       0x000000c4       0x1c srv.o
+ .comment       0x000000e0       0x1c uart.o
+ .comment       0x000000fc       0x1c colors.o
+ .comment       0x00000118       0x1c jpeg.o
+ .comment       0x00000134       0x1c io.o
+ .comment       0x00000150       0x1c init.o
+ .comment       0x0000016c       0x1c string.o
+ .comment       0x00000188       0x1c sdcard.o
+ .comment       0x000001a4       0x1c rtc.o
+ .comment       0x000001c0       0x1c motion.o
+ .comment       0x000001dc       0x1c timer.o
+ .comment       0x000001f8       0x1c soccer.o
+
+.debug_ranges   0x00000000      0x320
+ .debug_ranges  0x00000000      0x228 httpd.o
+ .debug_ranges  0x00000228       0x28 printf.o
+ .debug_ranges  0x00000250       0x38 init.o
+ .debug_ranges  0x00000288       0x78 string.o
+ .debug_ranges  0x00000300       0x20 timer.o
