@@ -512,7 +512,7 @@ void httpd_request(char firstChar)
                             else
                                 ch1 &= 0x0F;
                             camera_grabFrame();
-                            ix = vblob((unsigned char *)FRAME_BUF, (unsigned char *)FRAME_BUF3, ch1);
+                            ix = colors_vblob((unsigned char *)FRAME_BUF, (unsigned char *)FRAME_BUF3, ch1);
                             body = cgiResponse;  // use HTTP_BUFFER2
                             if (ix == 0xFFFFFFFF) {
                                 sprintf(body, "##vb%c -1\r\n", ch2);
@@ -560,7 +560,7 @@ void httpd_request(char firstChar)
                             break;
                         case 'm':  //    vm = mean colors
                         	camera_grabFrame();
-                            vmean((unsigned char *)FRAME_BUF);
+                            colors_vmean((unsigned char *)FRAME_BUF);
                             body = cgiResponse;  // use HTTP_BUFFER2
                             sprintf(body, "vmean %d %d %d\r\n", mean[0], mean[1], mean[2]);
                             contentLength = strlen((char *)body);
@@ -579,7 +579,7 @@ void httpd_request(char firstChar)
                             ch4 = params[9] & 0x0F;
                             i2 = ch1*1000 + ch2*100 + ch3*10 + ch4;
                             camera_grabFrame();
-                            ix = vpix((unsigned char *)FRAME_BUF, i1, i2);
+                            ix = colors_vpix((unsigned char *)FRAME_BUF, i1, i2);
                             body = cgiResponse;  // use HTTP_BUFFER2
                             sprintf(body, "pix %d %d %d\r\n",
                                 ((ix>>16) & 0x000000FF),  // Y1
@@ -605,7 +605,7 @@ void httpd_request(char firstChar)
                         case 's':  //    vs = scan for edges 
                             x1 = (unsigned int)params[2] & 0x0F;  // get number of columns to use
                             camera_grabFrame();
-                            ix = vscan((unsigned char *)SPI_BUFFER1, (unsigned char *)FRAME_BUF, edge_thresh, (unsigned int)x1, (unsigned int *)&vect[0]);
+                            ix = colors_vscan((unsigned char *)SPI_BUFFER1, (unsigned char *)FRAME_BUF, edge_thresh, (unsigned int)x1, (unsigned int *)&vect[0]);
                             printf("vscan = %d ", ix);
                             for (i1=0; i1<x1; i1++)
                                 printf("%4d ", vect[i1]);

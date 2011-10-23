@@ -202,10 +202,11 @@ void check_battery() { // 'D' command
 void srv_grabProcessAndSendFrame()
 {
 	int start, stop;
+	GolfBall balls[MAX_GOLF_BALLS];
 
 	camera_grabFrame();
 	//srv_processFrame();
-	_debugInfo = algorithm_searchGolfBalls((unsigned char *)FRAME_BUF);
+	_debugInfo = colors_searchGolfBalls((unsigned char *)FRAME_BUF, balls);
 
 	start = rtc_read();
 	srv_sendFrame();

@@ -24,10 +24,12 @@
 #include "timer.h"
 #include "debug.h"
 #include "soccer.h"
+#include "colors.h"
 
 extern void httpd_request(char firstChar);
 
-int main() {
+int main()
+{
     unsigned char ch;
     frameSize frame;
     int rtcMs = 0;
@@ -48,14 +50,14 @@ int main() {
     uart_initUart1(UART1_BAUDRATE);
     clear_sdram(); // Clears from 0x00100000 to 0x02000000
     camera_setup(frame);
-    init_colors(); 			// dependant on camera setup
+    colors_init(); 			// dependant on camera setup
     srv_initVariables();	// dependant on camera setup
 
    // serial_out_version();
 
     while (1)
     {
-    	//soccer_run();
+    	soccer_run();
     	if ((rtc_read() - rtcMs) > 1000)
     	{
     		rtcMs = rtc_read();

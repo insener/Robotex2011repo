@@ -21,14 +21,11 @@
 // Type definitions
 //////////////////////////////
 
+
 //////////////////////////////
 // Private global defines
 //////////////////////////////
-//#define index(xx, yy)  ((yy * _imgWidth + xx) * 2) & 0xFFFFFFFC  // always a multiple of 4
 
-//////////////////////////////
-// Private global functions
-//////////////////////////////
 
 //////////////////////////////
 // Private global variables
@@ -38,7 +35,24 @@ unsigned int ymax[MAX_COLORS], ymin[MAX_COLORS], umax[MAX_COLORS], umin[MAX_COLO
 unsigned int blobx1[MAX_BLOBS], blobx2[MAX_BLOBS], bloby1[MAX_BLOBS], bloby2[MAX_BLOBS], blobcnt[MAX_BLOBS], blobix[MAX_BLOBS];
 unsigned int hist0[256], hist1[256], mean[3];
 
-void init_colors() {
+//////////////////////////////
+// Private global functions
+//////////////////////////////
+unsigned int index(unsigned int xx, unsigned int yy);
+unsigned int svs_segcode(unsigned char *outbuf, unsigned char *inbuf, int thresh);
+void 		 svs_segview(unsigned char *inbuf, unsigned char *outbuf);
+void 		 addvect(unsigned char *outbuf, unsigned int columns, unsigned int *vect);
+void 		 addline(unsigned char *outbuf, int slope, int intercept);
+void		 addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned int y1, unsigned int y2);
+void		 setPixel(unsigned char *inbuf, int x, int y, int *fault);
+int			 markGolfBall(unsigned char *inbuf, int x, int y, int radius);
+
+
+
+/*
+ * Initializes colors module
+ */
+void colors_init() {
     unsigned int ii;
     frameSize frame;
     
@@ -55,12 +69,18 @@ void init_colors() {
     _imgWidth = frame.imageWidth;
 }
 
+/*
+ * Finds the pixel's index according to x and y coordinate in the frame buffer
+ */
 unsigned int index(unsigned int xx, unsigned int yy)
 {
 	return ((yy * _imgWidth + xx) * 2) & 0xFFFFFFFC;  // always a multiple of 4
 }
 
-unsigned int vpix(unsigned char *frame_buf, unsigned int xx, unsigned int yy) {
+/*
+ * Gets pixel in UYVy format
+ */
+unsigned int colors_vpix(unsigned char *frame_buf, unsigned int xx, unsigned int yy) {
         unsigned int ix;
         ix = index(xx,yy); 
         return    ((unsigned int)frame_buf[ix] << 24) +    // returns UYVY packed into 32-bit word
@@ -69,9 +89,11 @@ unsigned int vpix(unsigned char *frame_buf, unsigned int xx, unsigned int yy) {
                         (unsigned int)frame_buf[ix+3];
 }
 
-
-// return number of blobs found that match the search color
-unsigned int vblob(unsigned char *frame_buf, unsigned char *blob_buf, unsigned int ii) {
+/*
+ * Uses blob detection algorithm on the frame buffer. Returns number of blobs found that match the search color
+ */
+//
+unsigned int colors_vblob(unsigned char *frame_buf, unsigned char *blob_buf, unsigned int ii) {
     unsigned int jj, ix, xx, yy, y, u, v, count, bottom, top, tmp;
     unsigned int maxx, maxy;
     unsigned char *bbp, ctmp;
@@ -246,7 +268,7 @@ blobbreak:     // now sort blobs by size, largest to smallest pixel count
 //  hist0[] holds frequency of u|v combination  
 //  hist1[] holds average luminance corresponding each u|v combination
 
-void vhist(unsigned char *frame_buf) {
+void colors_vhist(unsigned char *frame_buf) {
     unsigned int ix, iy, xx, yy, y1, u1, v1;
 
     for (ix=0; ix<256; ix++) {          hist0[ix] = 0;  // accumulator 
@@ -268,9 +290,11 @@ void vhist(unsigned char *frame_buf) {
             hist1[ix] /= hist0[ix];  // normalize by number of hits
 }
 
-/* mean color function - computes mean value for Y, U and V
-   mean[0] = Y mean, mean[1] = U mean, mean[2] = V mean */
-void vmean(unsigned char *frame_buf) {
+/*
+ * Mean color function - computes mean value for Y, U and V
+ * mean[0] = Y mean, mean[1] = U mean, mean[2] = V mean
+ */
+void colors_vmean(unsigned char *frame_buf) {
     unsigned int ix, xx, yy, y1, u1, v1;
     unsigned int my, mu, mv;
     my = mu = mv = 0;
@@ -291,7 +315,10 @@ void vmean(unsigned char *frame_buf) {
     mean[2] = ((mv*2) / _imgWidth) / _imgHeigth;
 }
 
-void color_segment(unsigned char *frame_buf) {
+/*
+ * Finds segments in the frame
+ */
+void colors_segment(unsigned char *frame_buf) {
     unsigned int ix, xx, yy, y, u, v, clr;
     unsigned int ymid[MAX_COLORS], umid[MAX_COLORS], vmid[MAX_COLORS];
     
@@ -330,7 +357,9 @@ void color_segment(unsigned char *frame_buf) {
     }
 }
 
-/* count number of pixels matching 'clr' bin in range [x1,y1] to [x2,y2] */
+/*
+ * Counts number of pixels matching 'clr' bin in range [x1,y1] to [x2,y2]
+ */
 unsigned int vfind(unsigned char *frame_buf, unsigned int clr, 
                    unsigned int x1, unsigned int x2, unsigned int y1, unsigned int y2) {
     unsigned int ix, xx, yy, y, u, v, count;
@@ -356,7 +385,10 @@ unsigned int vfind(unsigned char *frame_buf, unsigned int clr,
     return count;
 }
 
-void edge_detect(unsigned char *inbuf, unsigned char *outbuf, int thresh) {
+/*
+ * Uses edge detection algorithm on the frame
+ */
+void colors_edgeDetect(unsigned char *inbuf, unsigned char *outbuf, int thresh) {
     unsigned int ix, xx, yy, y2, u2, v2, skip;
     unsigned char *ip, *op;
     unsigned int *ip1, *op1;
@@ -400,7 +432,10 @@ void edge_detect(unsigned char *inbuf, unsigned char *outbuf, int thresh) {
         ip1[ix] = op1[ix];
 }
 
-unsigned int vscan(unsigned char *outbuf, unsigned char *inbuf, int thresh, 
+/*
+ * Uses vscan on the frame
+ */
+unsigned int colors_vscan(unsigned char *outbuf, unsigned char *inbuf, int thresh,
            unsigned int columns, unsigned int *outvect) {
     int x, y;
     unsigned int ix, hits;
@@ -413,9 +448,15 @@ unsigned int vscan(unsigned char *outbuf, unsigned char *inbuf, int thresh,
     for (ix=0; ix<columns; ix++)    // initialize output vector
         outvect[ix] = _imgHeigth;
         
-    for (y=0; y<_imgHeigth; y++) {  // now search from top to bottom, noting each hit in the appropriate column
-        for (x=0; x<_imgWidth; x+=2) {  // note that edge detect used full UYVY per pixel position
-            if (*pp & 0xC0) {   // look for edge hit 
+    // now search from top to bottom, noting each hit in the appropriate column
+    for (y=0; y<_imgHeigth; y++)
+    {
+    	// note that edge detect used full UYVY per pixel position
+    	for (x=0; x<_imgWidth; x+=2)
+        {
+    		// look for edge hit
+    		if (*pp & 0xC0)
+            {
                 outvect[((x * columns) / _imgWidth)] = _imgHeigth - y;
                 hits++;
             }
@@ -425,8 +466,10 @@ unsigned int vscan(unsigned char *outbuf, unsigned char *inbuf, int thresh,
     return hits;
 }
 
-/* search for image horizon.  similar to vscan(), but search is top-to-bottom rather than bottom-to-top */
-unsigned int vhorizon(unsigned char *outbuf, unsigned char *inbuf, int thresh, 
+/*
+ * Search for image horizon.  similar to vscan(), but search is top-to-bottom rather than bottom-to-top
+ */
+unsigned int colors_vhorizon(unsigned char *outbuf, unsigned char *inbuf, int thresh,
            int columns, unsigned int *outvect, int *slope, int *intercept, int filter) {
     int x, y;
     int ix, hits;
@@ -502,6 +545,9 @@ unsigned int vhorizon(unsigned char *outbuf, unsigned char *inbuf, int thresh,
     return hits;
 }
 
+/*
+ *
+ */
 unsigned int svs_segcode(unsigned char *outbuf, unsigned char *inbuf, int thresh) {
     unsigned int ix, xx, yy, y2, u2, v2, skip;
     unsigned char *ip, *op, cc;
@@ -547,6 +593,9 @@ unsigned int svs_segcode(unsigned char *outbuf, unsigned char *inbuf, int thresh
     return edgepix;
 }
 
+/*
+ *
+ */
 void svs_segview(unsigned char *inbuf, unsigned char *outbuf) {
     unsigned int ix;
     unsigned char *ip, *op;
@@ -570,7 +619,9 @@ void svs_segview(unsigned char *inbuf, unsigned char *outbuf) {
     }
 }
 
-/* display vector as red pixels (YUV = 72 84 255) */
+/*
+ * Display vector as red pixels (YUV = 72 84 255)
+ */
 void addvect(unsigned char *outbuf, unsigned int columns, unsigned int *vect)
 {
     unsigned int xx, yy, ix;
@@ -586,8 +637,10 @@ void addvect(unsigned char *outbuf, unsigned int columns, unsigned int *vect)
     }
 }
 
-/* display line as red pixels (red YUV = 72 84 255) (yellow YUV = 194 18 145)
-   note that slope is scaled up by 1000 */
+/*
+ * Display line as red pixels (red YUV = 72 84 255) (yellow YUV = 194 18 145)
+ * note that slope is scaled up by 1000
+ */
 void addline(unsigned char *outbuf, int slope, int intercept)
 {
     int xx, yy, ix;
@@ -605,7 +658,9 @@ void addline(unsigned char *outbuf, int slope, int intercept)
     }
 }
 
-/* display a box as red pixels (YUV = 72 84 255) or yellow pixels (YUV = 194 18 145) */
+/*
+ * Display a box as red pixels (YUV = 72 84 255) or yellow pixels (YUV = 194 18 145)
+ */
 void addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned int y1, unsigned int y2)
 {
     unsigned int xx, yy, ix;
@@ -632,9 +687,12 @@ void addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned in
     }
 }
 
-/* Searches orange golf balls, if found then marks them. Up to 10 balls detected.
- * Returns the number of balls found*/
-unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
+/*
+ * Searches orange golf balls, if found then marks them. Up to 10 balls detected, so
+ * the golf ball buffer (_golfBalls) must be capable of holding up to 10 balls.
+ * Returns the number of balls found.
+ */
+unsigned int colors_searchGolfBalls(unsigned char *inbuf, GolfBall* golfBalls)
 {
 	const unsigned char CORRECTIVE_HEIGHT_CONSTANT = 17;
 	/*image processing constants*/
@@ -645,9 +703,9 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 	unsigned int end;
 	unsigned int y;
 	int rowIndex = 0;
-	int ballDiam[MAX_GOLF_BALLS] = {0,0,0,0,0,0,0,0,0,0};
-	int ballX[MAX_GOLF_BALLS]= {0,0,0,0,0,0,0,0,0,0};
-	int ballY[MAX_GOLF_BALLS]= {0,0,0,0,0,0,0,0,0,0};
+	//int ballDiam[MAX_GOLF_BALLS] = {0,0,0,0,0,0,0,0,0,0};
+	//int ballX[MAX_GOLF_BALLS]= {0,0,0,0,0,0,0,0,0,0};
+	//int ballY[MAX_GOLF_BALLS]= {0,0,0,0,0,0,0,0,0,0};
 	int ballIndex;
 	int newBall;
 	int state;
@@ -659,10 +717,18 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 	y = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex; // 17 is a corrective height index constant
 	start = index(0, y);
 	end = start + _imgWidth * 2 - 4;
+	// nill the buffer
+	for (i = 0; i < MAX_GOLF_BALLS; i++)
+	{
+		golfBalls[i].ballIdent = 0;
+		golfBalls[i].ballDiam = 0;
+		golfBalls[i].ballX = 0;
+		golfBalls[i].ballY = 0;
+	}
 	ballIndex = 0;
-	ballDiam[ballIndex] = 0;
-	ballX[ballIndex] = 0;
-	ballY[ballIndex] = 0;
+	//ballDiam[ballIndex] = 0;
+	//ballX[ballIndex] = 0;
+	//ballY[ballIndex] = 0;
 	newBall = 0;
 	state = noBall;
 
@@ -678,7 +744,7 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 				if ( (*(inbuf + i + 2) > ORANGE_V_LOW_LIMIT) && (*(inbuf + i + 2) < ORANGE_V_HIGH_LIMIT) )
 				{
 					//*(outbuf + i) = *(inbuf + i);
-					ballDiam[ballIndex]++;
+					golfBalls[ballIndex].ballDiam++;
 					state = extendBall;
 				}
 				break;
@@ -687,7 +753,7 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 				if ( (*(inbuf + i + 2) > ORANGE_V_LOW_LIMIT) && (*(inbuf + i + 2) < ORANGE_V_HIGH_LIMIT) )
 				{
 					//*(outbuf + i) = *(inbuf + i);
-					ballDiam[ballIndex]++;
+					golfBalls[ballIndex].ballDiam++;
 				}
 				else  // end of orange -> take a closer search
 				{
@@ -700,15 +766,16 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 						(( *(inbuf + i + 2 - rowStep) > ORANGE_V_LOW_LIMIT) && (*(inbuf + i + 2 - rowStep) < ORANGE_V_HIGH_LIMIT )) )
 				{
 					// continue with the same ball, add previous and this pixel
-					ballDiam[ballIndex] += 2;
+					golfBalls[ballIndex].ballDiam += 2;
 					state = extendBall;
 				}
 				else
 				{
 					//end of ball -> calculate ball info
 					//ballDiam[ballIndex] = ballDiam[ballIndex]; // divide by 2 as 1 pixel involves 2 bytes
-					ballX[ballIndex] = (((i - 4)/ 2 - start / 2) - ballDiam[ballIndex]);
-					ballY[ballIndex] = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex;
+					golfBalls[ballIndex].ballX = (((i - 4)/ 2 - start / 2) - golfBalls[ballIndex].ballDiam);
+					golfBalls[ballIndex].ballY = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex;
+					golfBalls[ballIndex].ballIdent = ballIndex;
 					ballIndex++;
 					if (ballIndex >= MAX_GOLF_BALLS)
 					{
@@ -732,20 +799,23 @@ unsigned int algorithm_searchGolfBalls(unsigned char *inbuf)
 	// check if the ball was cut by scene
 	if (state == extendBall)
 	{
-		ballX[ballIndex] = (_imgWidth - ballDiam[ballIndex]);
-		ballY[ballIndex] = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex;
+		golfBalls[ballIndex].ballX = (_imgWidth - golfBalls[ballIndex].ballDiam);
+		golfBalls[ballIndex].ballY = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex;
+		golfBalls[ballIndex].ballIdent = ballIndex;
 		ballIndex++;
 	}
 
 	for (i = 0; i < ballIndex; i++)
 	{
-		markGolfBall(inbuf, ballX[i], ballY[i], ballDiam[i]);
+		markGolfBall(inbuf, golfBalls[i].ballX, golfBalls[i].ballY, golfBalls[i].ballDiam);
 	}
 
-	return debugInfo;
+	return ballIndex;
 }
 
-/* draws a circle to mark a ball*/
+/*
+ * Draws a circle to mark a ball
+ */
 int markGolfBall(unsigned char *inbuf, int x, int y, int radius)
 {
 	int cx = 0;
@@ -812,6 +882,9 @@ int markGolfBall(unsigned char *inbuf, int x, int y, int radius)
 	return 1;
 }
 
+/*
+ * Sets certain pixel to blue
+ */
 void setPixel(unsigned char *inbuf, int x, int y, int *fault)
 {
 	int i;
