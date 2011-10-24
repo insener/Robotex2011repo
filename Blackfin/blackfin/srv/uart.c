@@ -15,12 +15,29 @@
 
 #include "uart.h"
 #include "srv.h"
-#include "rtc.h"
+#include "systemTime.h"
 
-
+//////////////////////////////
+// Private global constant definitions
+//////////////////////////////
 #define SUART_SEND0 *pPORTHIO |= 0x4000
 #define SUART_SEND1 *pPORTHIO &= 0xBFFF
 #define SUART_RECV  (*pPORTHIO & 0x8000)
+
+//////////////////////////////
+// Type definitions
+//////////////////////////////
+
+
+//////////////////////////////
+// Private global functions
+//////////////////////////////
+
+
+//////////////////////////////
+// Private global variables
+//////////////////////////////
+
 
 void waituntilNS(unsigned int target) {
     if (target > PERIPHERAL_CLOCK) {

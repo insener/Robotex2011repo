@@ -4,7 +4,7 @@
 #include "config.h"
 
 //////////////////////////////
-// Public global defines
+// Public global constant definitions
 //////////////////////////////
 #define IMAGE_HEADER_SIZE  7
 
@@ -15,10 +15,6 @@ typedef struct {
     int imageWidth;
     int imageHeight;
 } frameSize;
-
-//////////////////////////////
-// Public global variables
-//////////////////////////////
 
 //////////////////////////////
 // Public global functions
@@ -33,6 +29,10 @@ extern void 			camera_restoreVideo(void);
 extern void 			camera_getImageHeader(char* header);
 extern void 			camera_grabFrame(void);
 extern unsigned char** 	camera_grabVideo(void);
+
+//////////////////////////////
+// Public global variables
+//////////////////////////////
 
 #endif
 

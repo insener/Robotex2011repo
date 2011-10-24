@@ -25,7 +25,7 @@
 #include "stm_m25p32.h"
 #include "colors.h"
 #include "i2c.h"
-#include "rtc.h"
+#include "systemTime.h"
 #include "camera.h"
 
 //////////////////////////////
@@ -286,8 +286,8 @@ void httpd_request(char firstChar)
     //if (strcmp (method, "GET") == 0) {
     if (reqBuf[0] == 'G') {
         ret = 1;
-        t0 = rtc_read();
-        while (rtc_read() - t0 < 1000  &&  ret < REQBUF_SIZE) {
+        t0 = systemTime_readRTC();
+        while (systemTime_readRTC() - t0 < 1000  &&  ret < REQBUF_SIZE) {
             if (getchar((unsigned char *) &ch))
             {
                 char pch = reqBuf[ret - 1];     // ret always >= 1
@@ -365,7 +365,7 @@ void httpd_request(char firstChar)
                                 i2c_read(0x1D, (unsigned char *)i2c_data, 1, SCCB_ON);
                                 ix = (unsigned int)i2c_data[0];
                                 i2c_data[0] = ch1 + 1;
-                                rtc_delayUS(1000);
+                                systemTime_delayUS(1000);
                                 i2c_read(0x1D, (unsigned char *)i2c_data, 1, SCCB_ON);
                                 ix += (unsigned int)i2c_data[0] << 8;
                                 body = cgiResponse;  // use HTTP_BUFFER2
@@ -478,7 +478,7 @@ void httpd_request(char firstChar)
                             i2c_data[0] = (unsigned char)atoi_b16(&params[4]);
                             i2c_data[1] = (unsigned char)atoi_b16(&params[6]);
                             i2c_write(i2c_device, (unsigned char *)i2c_data, 1, SCCB_ON);
-                            rtc_delayUS(1000);
+                            systemTime_delayUS(1000);
                             i2c_data[0] = (unsigned char)atoi_b16(&params[8]);
                             i2c_data[1] = (unsigned char)atoi_b16(&params[10]);
                             i2c_write(i2c_device, (unsigned char *)i2c_data, 1, SCCB_ON);
@@ -676,7 +676,7 @@ void httpd_request(char firstChar)
                     break;
                 case 't':  // time in millisecs since last reset
                     body = cgiResponse;  // use HTTP_BUFFER2
-                    sprintf(body, "%08d\r\n", rtc_read());
+                    sprintf(body, "%08d\r\n", systemTime_readRTC());
                     contentLength = strlen((char *)body);
                     contentType = "text/plain";
                     new_content = 1;
@@ -753,14 +753,14 @@ void httpd_request(char firstChar)
     //else if (strcmp (method, "POST") == 0) {
     else if (reqBuf[0] == 'P') {
         ret = 1;
-        t0 = rtc_read();
-        while (rtc_read() - t0 < 1000  &&  ret < HTTP_BUFFER_SIZE) {
+        t0 = systemTime_readRTC();
+        while (systemTime_readRTC() - t0 < 1000  &&  ret < HTTP_BUFFER_SIZE) {
             if (getchar((unsigned char *) &ch)) {
                 reqBuf[ret++] = ch;
                        // POST should end with a boundary terminated by "--"
                 //if (ret >= 4  &&  strncmp (reqBuf + ret - 4, "--\r\n", 4) == 0)
                     //break;
-                t0 = rtc_read();
+                t0 = systemTime_readRTC();
             }
         }
         reqBuf[ret] = 0;

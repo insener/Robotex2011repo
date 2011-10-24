@@ -15,23 +15,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "i2c.h"
-#include "rtc.h"
+#include "systemTime.h"
 #include "ov9655.h"
 #include "ov7725.h"
 #include "camera.h"
 #include "string.h"
 
 //////////////////////////////
-// Type definitions
-//////////////////////////////
-typedef struct {
-    void *pNext;
-    unsigned char *pBuf;
-    short dConfig;
-} dmaDescList;
-
-//////////////////////////////
-// Private global defines
+// Private global constant definitions
 //////////////////////////////
 #define POL_C            0x0000
 #define POL_S            0x0000
@@ -47,6 +38,14 @@ typedef struct {
 #define DMA_WNR          0x0002  
 #define DMA_ENABLE       0x0001
 
+//////////////////////////////
+// Type definitions
+//////////////////////////////
+typedef struct {
+    void *pNext;
+    unsigned char *pBuf;
+    short dConfig;
+} dmaDescList;
 
 //////////////////////////////
 // Private global functions
@@ -58,9 +57,8 @@ void moveInvertedImage(unsigned char *src1, unsigned char *src2, unsigned char *
 //////////////////////////////
 // Private global variables
 //////////////////////////////
-dmaDescList _dlist1;
-dmaDescList _dlist2;
-
+dmaDescList 	_dlist1;
+dmaDescList 	_dlist2;
 int 		    _imgWidth;     // image width in pixels
 int 		    _imgHeight;    // image height in pixels
 char 		    _imgHead[IMAGE_HEADER_SIZE];    // image frame header for I command
@@ -181,11 +179,11 @@ void camera_setup (frameSize frame)
 
     // write to camera
     for (ix=0; ix<3; ix++) {
-        rtc_delayMS(100);
+        systemTime_delayMS(100);
         i2c_write(0x21, ov7725_qvga, sizeof(ov7725_qvga)>>1, SCCB_ON);
     }
     for (ix=0; ix<3; ix++) {
-        rtc_delayMS(100);
+        systemTime_delayMS(100);
         i2c_write(0x30, ov9655_qvga, sizeof(ov9655_qvga)>>1, SCCB_ON);
     }
     initializeHW((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2, _imgWidth, _imgHeight);
@@ -339,7 +337,7 @@ unsigned char** camera_grabVideo(void)
 			moveImage((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2,
 													_videoBuffer[i], _imgWidth, _imgHeight);
 		}
-		rtc_delayMS(100);
+		systemTime_delayMS(100);
 	}
 	return _videoBufPointer;
 }

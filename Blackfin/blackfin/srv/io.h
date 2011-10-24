@@ -11,16 +11,30 @@
 #include "config.h"
 
 //////////////////////////////
-// Public global defines
+// Public global constant definitions
 //////////////////////////////
-#define LED1				0x0100 //0b0000000100000000  // PG8
-#define LED2				0x0200 //0b0000001000000000	 // PG9
+#define LED1				PG8
+#define LED2				PG9
 
-#define MATCHPORT_RTS0		0x0001 //0b0000000000000001  // PH0
-#define BALL_SENSOR			0x8000 //0b0000000000000010  // PH1/PH15
-#define BATTERY				0x0004 //0b0000000000000100  // PH2
-#define UART0_FLOW_CRTL		0x0040 //0b0000000001000000  // PH6
-#define TEST_OUTPUT			0x4000  // PH14
+#define TIMER0_PIN			PF9
+#define TIMER1_PIN  		PF8
+#define TIMER2_PIN  		PF7  //  external pin  7
+#define TIMER3_PIN  		PF6  //  external pin  8
+#define TIMER4_PIN  		PF5
+#define TIMER5_PIN  		PF4
+#define TIMER6_PIN  		PF3  //  external pin  5
+#define TIMER7_PIN  		PF2  //  external pin  6
+
+
+#define MATCHPORT_RTS0		PH0  //  external pin 17
+#define BATTERY				PH2  //  external pin 19
+#define UART0_FLOW_CRTL		PH6  //  external pin 23
+#define TEST_OUTPUT			PH10 //  external pin 27
+#define BALL_SENSOR			PH11 //  external pin 28
+#define IR_DIST_LEFT        PH12 //  external pin 29
+#define IR_DIST_RIGHT       PH13 //  external pin 30
+#define PLAY_SWITCH_OUT		PH14 //  external pin 31
+#define PLAY_SWITCH_IN		PH15 //  external pin 32
 
 #define DISABLE_BALL_SENSOR_INTERRUPT  *pPORTHIO_MASKA_CLEAR = BALL_SENSOR;
 #define ENABLE_BALL_SENSOR_INTERRUPT   *pPORTHIO_MASKA_SET  = BALL_SENSOR;
@@ -29,9 +43,6 @@
 // Public global type definitions
 //////////////////////////////
 
-//////////////////////////////
-// Public global variables
-//////////////////////////////
 
 //////////////////////////////
 // Public global functions
@@ -46,5 +57,11 @@ extern void 		io_LED2Clear(void);
 extern void 		io_LED2Toggle(void);
 extern void			io_enableBallSensorInterrupt(void);
 extern void			io_disableBallSensorInterrupt(void);
+extern int			io_isPlaySwitchOn(void);
+
+//////////////////////////////
+// Public global variables
+//////////////////////////////
+
 
 #endif /* IO_H_ */

@@ -18,22 +18,14 @@
 #include "camera.h"
 
 //////////////////////////////
+// Private global constant definitions
+//////////////////////////////
+
+
+//////////////////////////////
 // Type definitions
 //////////////////////////////
 
-
-//////////////////////////////
-// Private global defines
-//////////////////////////////
-
-
-//////////////////////////////
-// Private global variables
-//////////////////////////////
-unsigned int _imgWidth, _imgHeigth;
-unsigned int ymax[MAX_COLORS], ymin[MAX_COLORS], umax[MAX_COLORS], umin[MAX_COLORS], vmax[MAX_COLORS], vmin[MAX_COLORS];
-unsigned int blobx1[MAX_BLOBS], blobx2[MAX_BLOBS], bloby1[MAX_BLOBS], bloby2[MAX_BLOBS], blobcnt[MAX_BLOBS], blobix[MAX_BLOBS];
-unsigned int hist0[256], hist1[256], mean[3];
 
 //////////////////////////////
 // Private global functions
@@ -47,7 +39,13 @@ void		 addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned 
 void		 setPixel(unsigned char *inbuf, int x, int y, int *fault);
 int			 markGolfBall(unsigned char *inbuf, int x, int y, int radius);
 
-
+//////////////////////////////
+// Private global variables
+//////////////////////////////
+unsigned int _imgWidth, _imgHeigth;
+unsigned int ymax[MAX_COLORS], ymin[MAX_COLORS], umax[MAX_COLORS], umin[MAX_COLORS], vmax[MAX_COLORS], vmin[MAX_COLORS];
+unsigned int blobx1[MAX_BLOBS], blobx2[MAX_BLOBS], bloby1[MAX_BLOBS], bloby2[MAX_BLOBS], blobcnt[MAX_BLOBS], blobix[MAX_BLOBS];
+unsigned int hist0[256], hist1[256], mean[3];
 
 /*
  * Initializes colors module

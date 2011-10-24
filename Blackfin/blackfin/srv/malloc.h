@@ -1,3 +1,6 @@
+#ifndef MALLOC_H_
+#define MALLOC_H_
+
 char *malloc(unsigned int);
 void free(char *);
 void init_heap();
@@ -16,3 +19,5 @@ extern char *heap_start, *heap_ptr, *heap_end;
 extern HEADER base;         // pointer to beginning of free block list
 extern HEADER *allocp;      // last allocated block
 HEADER *morecore(unsigned int);
+
+#endif  /* MALLOC_H_ */

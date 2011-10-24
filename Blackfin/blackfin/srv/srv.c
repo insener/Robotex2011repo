@@ -16,7 +16,7 @@
 
 #include "uart.h"
 #include "i2c.h"
-#include "rtc.h"
+#include "systemTime.h"
 #include "camera.h"
 #include "jpeg.h"
 #include "stm_m25p32.h"
@@ -159,7 +159,7 @@ void serial_out_version () {
 /* Get current time
    Serial protocol char: t */
 void serial_out_time () {
-    printf("##time - millisecs:  %d\r\n", rtc_read());
+    printf("##time - millisecs:  %d\r\n", systemTime_readRTC());
 }
 
 /* Dump flash buffer to serial
@@ -208,9 +208,9 @@ void srv_grabProcessAndSendFrame()
 	//srv_processFrame();
 	_debugInfo = colors_searchGolfBalls((unsigned char *)FRAME_BUF, balls);
 
-	start = rtc_read();
+	start = systemTime_readRTC();
 	srv_sendFrame();
-	stop = rtc_read();
+	stop = systemTime_readRTC();
 	if (stop < start)
 	{
 		_processTime = 0;
@@ -311,13 +311,13 @@ void srv_sendRawYUV(unsigned char *srcBuffer)
 
 	// send header first
 	printf("##rawYUVstart\r\n");
-	rtc_delayUS(20);
+	systemTime_delayUS(20);
 	// Format is U Y1 V Y2, where Y1 and Y2 is brightness for pixels #1 and #2.
 	// U and V are common for both pixels.
 	for (ix = 0; ix < (imgWidth * imgHeight) * 2; ix++)
 		putchar(*frameBuffer++);
 	// send tale afterwards
-	rtc_delayUS(200);
+	systemTime_delayUS(200);
 	printf("##rawYUVstop\r\n");
 	return;
 }
@@ -327,7 +327,7 @@ void srv_sendRawYUVVideo(unsigned char **srcBuffer)
 	for (i = 0; i < VIDEO_BUF_COUNT; i++)
 	{
 		srv_sendRawYUV(srcBuffer[i]);
-		rtc_delayMS(500);
+		systemTime_delayMS(500);
 	}
 }
 
@@ -442,7 +442,7 @@ void process_i2c() {
             c1 = (unsigned char)getch();
             c2 = (unsigned char)getch();
             i2c_write(i2c_device, (unsigned char *)i2c_data, 1, SCCB_ON);
-            rtc_delayUS(1000);
+            systemTime_delayUS(1000);
             i2c_data[0] = c1;
             i2c_data[1] = c2;
             i2c_write(i2c_device, (unsigned char *)i2c_data, 1, SCCB_ON);

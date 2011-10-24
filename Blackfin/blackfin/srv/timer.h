@@ -11,16 +11,9 @@
 #include "config.h"
 
 //////////////////////////////
-// Public global defines
+// Public global constant definitions
 //////////////////////////////
-#define TIMER0_PIN	PF9
-#define TIMER1_PIN  PF8
-#define TIMER2_PIN  PF7
-#define TIMER3_PIN  PF6
-#define TIMER4_PIN  PF5
-#define TIMER5_PIN  PF4
-#define TIMER6_PIN  PF3
-#define TIMER7_PIN  PF2
+
 //////////////////////////////
 // Public global type definitions
 //////////////////////////////
@@ -45,15 +38,8 @@ enum TimerMode
 };
 
 //////////////////////////////
-// Public global variables
-//////////////////////////////
-
-//////////////////////////////
 // Public global functions
 //////////////////////////////
-
-/* core timer (system timer)*/
-extern unsigned int timer_getCoreTimerValue(void);
 
 /* peripheral timers*/
 extern void timer_configureTimer(enum Timer timer, unsigned short config, enum TimerMode type, unsigned long period, unsigned long width);
@@ -62,5 +48,9 @@ extern void timer_configureTimerInterrupt(enum Timer timer);
 extern void timer_enableTimer(enum Timer timer);
 extern void timer_disableTimer(enum Timer timer);
 extern void timer_init(void);
+
+//////////////////////////////
+// Public global variables
+//////////////////////////////
 
 #endif /* TIMER_H_ */

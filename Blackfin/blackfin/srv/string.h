@@ -1,3 +1,6 @@
+#ifndef _STDLIB_H_
+#define _STDLIB_H_
+
 #include "stdlib.h"
 
 extern int  strcmp(char *, char *);
@@ -67,4 +70,4 @@ extern unsigned getUnaligned32 (    // Returns value
 void *          p);                 // Pointer to 32-bit value, need not be 32-bit aligned
 
 
-
+#endif  /* STDLIB_H_*/

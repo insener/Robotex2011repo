@@ -8,6 +8,7 @@
 #include "io.h"
 #include "timer.h"
 #include "srv.h"
+#include "stdlib.h"
 
 //////////////////////////////
 // Type definitions
@@ -38,7 +39,7 @@ void io_initPeriphery(void)
 	*pPORTGIO_DIR   = LED1 | LED2;      					  // LEDs (PG8 and PG9)
 	*pPORTGIO		= 0x0000;								  // clear LED states
 	*pPORTH_FER     = 0x0000;           					  // set portH for GPIO
-	*pPORTHIO_DIR   = UART0_FLOW_CRTL | TEST_OUTPUT;  					  // set PORTH6 to output for serial flow control
+	*pPORTHIO_DIR   = UART0_FLOW_CRTL | TEST_OUTPUT;  		  // set PORTH6 to output for serial flow control
 	*pPORTHIO       = 0x0000;           					  // set output low
 	*pPORTHIO_INEN  = MATCHPORT_RTS0 | BALL_SENSOR | BATTERY; // enable inputs: Matchport RTS0 (H0), ball sensor (H1), battery (H2)
 	//*pPORTHIO_DIR  |= 0x0380;   // set up lasers - note that GPIO-H8 is used for SD SPI select on RCM board
@@ -149,4 +150,19 @@ void io_LED2Clear(void)
 void io_LED2Toggle(void)
 {
 	*pPORTGIO_TOGGLE = LED2;
+}
+
+/*
+ * Checks if Play switch is switched ON
+ */
+int io_isPlaySwitchOn(void)
+{
+	if (*pPORTHIO & PLAY_SWITCH_IN)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }

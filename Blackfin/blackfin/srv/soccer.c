@@ -9,9 +9,10 @@
 #include "timer.h"
 #include "io.h"
 #include "colors.h"
+#include "systemTime.h"
 
 //////////////////////////////
-// Private global defines
+// Private global constant definitions
 //////////////////////////////
 #define SYSTEM_MAIN_LOOP_DURATION   30		// one main loop duration
 #define SLIDE_WINDOW_COUNT           3
@@ -25,8 +26,8 @@
 //////////////////////////////
 // Private global functions
 //////////////////////////////
-void doIdleTime(void);
 void makeDecision(void);
+void doIdleTime(void);
 
 //////////////////////////////
 // Private global variables
@@ -42,7 +43,7 @@ int		   	 _bufferIndexer;
 void soccer_init(void)
 {
 	int i;
-	_pointerToPointers = _slideBufferPointers;
+
 	for (i = 0; i < SLIDE_WINDOW_COUNT; i++)
 	{
 		_slideBufferPointers[i] = &_slideBuffer[i * MAX_GOLF_BALLS];
@@ -56,17 +57,35 @@ void soccer_init(void)
  */
 void soccer_run(void)
 {
+	unsigned int timeBase;
+
 	// play soccer forever
 	while(1)
 	{
-		// take picture
-		camera_grabFrame();
-		// find golf balls
-		_bufferBallCount[WINDOW_NR] = colors_searchGolfBalls((unsigned char *)FRAME_BUF, _slideBufferPointers[WINDOW_NR]);
-		NEXT_WINDOW;
-		makeDesicion();
+		timeBase = systemTime_getSystemTimeBase();
+
+		if (timeBase & SYSTEM_MAIN_LOOP_TIME_BASE)
+		{
+			*pPORTHIO_TOGGLE = TEST_OUTPUT;
+			// take picture
+			//camera_grabFrame();
+			// find golf balls
+			//_bufferBallCount[WINDOW_NR] = colors_searchGolfBalls((unsigned char *)FRAME_BUF, _slideBufferPointers[WINDOW_NR]);
+			//NEXT_WINDOW;
+		}
+		if (timeBase & SYSTEM_3x_MAIN_LOOP_TIME_BASE)
+		{
+			makeDecision();
+		}
+		if (timeBase & SYSTEM_12x_MAIN_LOOP_TIME_BASE)
+		{
+			io_LED2Toggle();
+		}
 		// keep in loop until 30 ms elapsed from last time
-		doIdleTime();
+		while (!systemTime_checkMainLoopDuration())
+		{
+			doIdleTime();
+		}
 	}
 }
 
@@ -78,18 +97,7 @@ void makeDecision(void)
 
 }
 
-/*
- * Do idle time until next 30 ms is elapsed
- */
 void doIdleTime(void)
 {
-	static unsigned int coreTimerCurrent = 0;
-	static unsigned int coreTimerMainLoop = 0;
-	do
-	{
-		coreTimerCurrent = timer_getCoreTimerValue();
-	}
-	while ((coreTimerCurrent - coreTimerMainLoop) >= SYSTEM_MAIN_LOOP_DURATION);
-	coreTimerMainLoop = coreTimerCurrent;
-	*pPORTHIO_TOGGLE = TEST_OUTPUT;
+
 }

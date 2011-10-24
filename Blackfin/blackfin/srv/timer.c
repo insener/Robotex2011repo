@@ -11,63 +11,34 @@
 #include "debug.h"
 
 //////////////////////////////
+// Private global constant definitions
+//////////////////////////////
+
+//////////////////////////////
 // Type definitions
 //////////////////////////////
 
 
 //////////////////////////////
-// Private global defines
-//////////////////////////////
-#define	INTERRUPT_FREQUENCY	1000
-#define	PRESCALE_VALUE		1
-#define DECREMENT_VALUE		(CORE_CLOCK / PRESCALE_VALUE) / (INTERRUPT_FREQUENCY)
-
-#define DISABLE_CORE_TIMER_INTERRUPT *pIMASK &= ~EVT_IVTMR; SSYNC;
-#define ENABLE_CORE_TIMER_INTERRUPT  *pIMASK |= EVT_IVTMR;  SSYNC;
-
-//////////////////////////////
 // Private global functions
 //////////////////////////////
-void initializeCoreTimer(void);
-
 void INTERRUPT_timer(void) __attribute__((interrupt_handler));
-void INTERRUPT_coreTimer(void) __attribute__((interrupt_handler));
+
 //////////////////////////////
 // Private global variables
 //////////////////////////////
-unsigned int _coreTimerCount;
 
-void initializeCoreTimer(void)
-{
-	_coreTimerCount = 0;
-	// Put core timer in active state enable autoreload
-	*pTCNTL |= TAUTORLD | TMPWR;
-	// Init the timer scale register with divisor - 1
-	*pTSCALE = PRESCALE_VALUE - 1;
-	// Load count register with number to decrement from
-	*pTCOUNT = DECREMENT_VALUE;
-	*pTPERIOD = DECREMENT_VALUE;
-	// Set the interrupt to call timer_ISR()
-	*pEVT6 = INTERRUPT_coreTimer;
-	// Unmask the core timer interrupt
-	*pIMASK |= EVT_IVTMR;
-	//Enable timer
-	*pTCNTL |= TMREN;
-}
+
 
 /*
  * timer module initialization
  */
 void timer_init(void)
 {
-	// timer 4 for delay
-	timer_configureTimer(TIMER4, PULSE_HI | PWM_OUT | PERIOD_CNT, PWMOUT, PERIPHERAL_CLOCK, PERIPHERAL_CLOCK);
-	timer_enableTimer(TIMER4);
+
 	// timer 5 for ball sensor and relay activating
 	timer_configureTimer(TIMER5, PERIOD_CNT, INTERNAL, PERIPHERAL_CLOCK, PERIPHERAL_CLOCK);  // 1 sec. period
 	timer_configureTimerInterrupt(TIMER5);
-
-	initializeCoreTimer();
 }
 
 /*
@@ -423,18 +394,6 @@ void timer_disableTimer(enum Timer timer)
 }
 
 /*
- * Returns the core timer value
- */
-unsigned int timer_getCoreTimerValue(void)
-{
-	unsigned int count;
-	DISABLE_CORE_TIMER_INTERRUPT;
-	count = _coreTimerCount;
-	ENABLE_CORE_TIMER_INTERRUPT;
-	return count;
-}
-
-/*
  * Timer interrupt routine
  */
 __attribute__((interrupt_handler))
@@ -461,15 +420,4 @@ void INTERRUPT_timer(void)
 		io_enableBallSensorInterrupt();
 	}
 	debug_setDebugInfo(status);
-}
-
-/*
- * Core timer interrupt routine, increments timer's value.
- * Should happen after every 1 ms.
- */
-__attribute__((interrupt_handler))
-void INTERRUPT_coreTimer(void)
-{
-	// do not afraid the overflow as program never runs up to 50 days
-	_coreTimerCount++;
 }
