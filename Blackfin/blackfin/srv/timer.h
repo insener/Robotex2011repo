@@ -19,7 +19,7 @@
 //////////////////////////////
 enum Timer
 {
-	TIMER0,
+	TIMER0 = 0,
 	TIMER1,
 	TIMER2,
 	TIMER3,
@@ -42,12 +42,13 @@ enum TimerMode
 //////////////////////////////
 
 /* peripheral timers*/
-extern void timer_configureTimer(enum Timer timer, unsigned short config, enum TimerMode type, unsigned long period, unsigned long width);
-extern void timer_setTimerWidth(enum Timer timer, unsigned long width);
-extern void timer_configureTimerInterrupt(enum Timer timer);
-extern void timer_enableTimer(enum Timer timer);
-extern void timer_disableTimer(enum Timer timer);
-extern void timer_init(void);
+extern void 		 timer_init(void);
+extern void 		 timer_configureTimer(enum Timer timer, unsigned short config, enum TimerMode type, unsigned long period, unsigned long width);
+extern void 		 timer_setTimerWidth(enum Timer timer, unsigned long width);
+extern void 		 timer_configureTimerInterrupt(enum Timer timer);
+extern void 		 timer_enableTimer(enum Timer timer);
+extern void 		 timer_disableTimer(enum Timer timer);
+extern unsigned long timer_getTimerWidth(enum Timer timer);
 
 //////////////////////////////
 // Public global variables

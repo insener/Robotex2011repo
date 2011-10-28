@@ -26,6 +26,7 @@
 #include "soccer.h"
 #include "colors.h"
 #include "remoteControl.h"
+#include "logic.h"
 
 //////////////////////////////
 // Private global constant definitions
@@ -66,6 +67,7 @@ void initializeModules(void)
     camera_setup(frame);
     colors_init(); 			// dependant on camera setup
     srv_initVariables();	// dependant on camera setup
+    logic_init();
 }
 
 /*

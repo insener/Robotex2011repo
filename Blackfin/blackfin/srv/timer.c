@@ -13,6 +13,7 @@
 //////////////////////////////
 // Private global constant definitions
 //////////////////////////////
+#define TIMER_COUNT  8
 
 //////////////////////////////
 // Type definitions
@@ -23,11 +24,13 @@
 // Private global functions
 //////////////////////////////
 void INTERRUPT_timer(void) __attribute__((interrupt_handler));
+void disableTimerInterrupt(enum Timer timer);
+void enableTimerInterrupt(enum Timer timer);
 
 //////////////////////////////
 // Private global variables
 //////////////////////////////
-
+unsigned long _timerPwmWidths[TIMER_COUNT] = {0};
 
 
 /*
@@ -35,10 +38,9 @@ void INTERRUPT_timer(void) __attribute__((interrupt_handler));
  */
 void timer_init(void)
 {
-
 	// timer 5 for ball sensor and relay activating
-	timer_configureTimer(TIMER5, PERIOD_CNT, INTERNAL, PERIPHERAL_CLOCK, PERIPHERAL_CLOCK);  // 1 sec. period
-	timer_configureTimerInterrupt(TIMER5);
+	//timer_configureTimer(TIMER5, PERIOD_CNT, INTERNAL, PERIPHERAL_CLOCK, PERIPHERAL_CLOCK);  // 1 sec. period
+	//timer_configureTimerInterrupt(TIMER5);
 }
 
 /*
@@ -94,17 +96,21 @@ void timer_configureTimer(enum Timer timer, unsigned short config, enum TimerMod
 			}
 			break;
 		case TIMER3:
-			*pTIMER3_CONFIG = config;
-			*pTIMER3_PERIOD = period;
-			*pTIMER3_WIDTH  = width;
+			// enable timer functionality
+			*pPORTF_FER |= TIMER3_PIN;
 			switch(type)
 			{
-				case PWMOUT:
-					// set PWM output
-					*pPORTF_FER |= TIMER3_PIN;
+				case WDTHCAP:
+					*pTIMER3_PERIOD = period;
+					*pTIMER3_WIDTH  = width;
+					*pTIMER3_CONFIG = config;
 					break;
+				case PWMOUT:
 				case INTERNAL:
 				default:
+					*pTIMER3_CONFIG = config;
+					*pTIMER3_PERIOD = period;
+					*pTIMER3_WIDTH  = width;
 					break;
 			}
 			break;
@@ -281,50 +287,42 @@ void timer_enableTimer(enum Timer timer)
 	switch (timer)
 	{
 		case TIMER0:
-			*pTIMER0_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER0);
 			*pTIMER_ENABLE |= TIMEN0;
 			SSYNC;
 			break;
 		case TIMER1:
-			*pTIMER1_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER1);
 			*pTIMER_ENABLE |= TIMEN1;
 			SSYNC;
 			break;
 		case TIMER2:
-			*pTIMER2_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER2);
 			*pTIMER_ENABLE |= TIMEN2;
 			SSYNC;
 			break;
 		case TIMER3:
-			*pTIMER3_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER3);
 			*pTIMER_ENABLE |= TIMEN3;
 			SSYNC;
 			break;
 		case TIMER4:
-			*pTIMER4_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER4);
 			*pTIMER_ENABLE |= TIMEN4;
 			SSYNC;
 			break;
 		case TIMER5:
-			*pTIMER5_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER5);
 			*pTIMER_ENABLE |= TIMEN5;
 			SSYNC;
 			break;
 		case TIMER6:
-			*pTIMER6_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER6);
 			*pTIMER_ENABLE |= TIMEN6;
 			SSYNC;
 			break;
 		case TIMER7:
-			*pTIMER7_CONFIG |= IRQ_ENA;
-			SSYNC;
+			enableTimerInterrupt(TIMER7);
 			*pTIMER_ENABLE |= TIMEN7;
 			SSYNC;
 			break;
@@ -341,51 +339,131 @@ void timer_disableTimer(enum Timer timer)
 	switch (timer)
 	{
 		case TIMER0:
-			*pTIMER0_CONFIG &= ~IRQ_ENA;
-			SSYNC;
+			disableTimerInterrupt(TIMER0);
 			*pTIMER_DISABLE |= TIMEN0;
+			SSYNC;
+			break;
+		case TIMER1:
+			disableTimerInterrupt(TIMER1);
+			*pTIMER_DISABLE |= TIMEN1;
+			SSYNC;
+			break;
+		case TIMER2:
+			disableTimerInterrupt(TIMER2);
+			*pTIMER_DISABLE |= TIMEN2;
+			SSYNC;
+			break;
+		case TIMER3:
+			disableTimerInterrupt(TIMER3);
+			*pTIMER_DISABLE |= TIMEN3;
+			SSYNC;
+			break;
+		case TIMER4:
+			disableTimerInterrupt(TIMER4);
+			*pTIMER_DISABLE |= TIMEN4;
+			SSYNC;
+			break;
+		case TIMER5:
+			disableTimerInterrupt(TIMER5);
+			*pTIMER_DISABLE |= TIMEN5;
+			SSYNC;
+			break;
+		case TIMER6:
+			disableTimerInterrupt(TIMER6);
+			*pTIMER_DISABLE |= TIMEN6;
+			SSYNC;
+			break;
+		case TIMER7:
+			disableTimerInterrupt(TIMER7);
+			*pTIMER_DISABLE |= TIMEN7;
+			SSYNC;
+			break;
+		default:
+			break;
+	}
+}
+
+/*
+ * Disables given timer interrupt
+ */
+void disableTimerInterrupt(enum Timer timer)
+{
+	switch (timer)
+	{
+		case TIMER0:
+			*pTIMER0_CONFIG &= ~IRQ_ENA;
 			SSYNC;
 			break;
 		case TIMER1:
 			*pTIMER1_CONFIG &= ~IRQ_ENA;
 			SSYNC;
-			*pTIMER_DISABLE |= TIMEN1;
-			SSYNC;
 			break;
 		case TIMER2:
 			*pTIMER2_CONFIG &= ~IRQ_ENA;
-			SSYNC;
-			*pTIMER_DISABLE |= TIMEN2;
 			SSYNC;
 			break;
 		case TIMER3:
 			*pTIMER3_CONFIG &= ~IRQ_ENA;
 			SSYNC;
-			*pTIMER_DISABLE |= TIMEN3;
-			SSYNC;
 			break;
 		case TIMER4:
 			*pTIMER4_CONFIG &= ~IRQ_ENA;
-			SSYNC;
-			*pTIMER_DISABLE |= TIMEN4;
 			SSYNC;
 			break;
 		case TIMER5:
 			*pTIMER5_CONFIG &= ~IRQ_ENA;
 			SSYNC;
-			*pTIMER_DISABLE |= TIMEN5;
-			SSYNC;
 			break;
 		case TIMER6:
 			*pTIMER6_CONFIG &= ~IRQ_ENA;
-			SSYNC;
-			*pTIMER_DISABLE |= TIMEN6;
 			SSYNC;
 			break;
 		case TIMER7:
 			*pTIMER7_CONFIG &= ~IRQ_ENA;
 			SSYNC;
-			*pTIMER_DISABLE |= TIMEN7;
+			break;
+		default:
+			break;
+	}
+}
+
+/*
+ * Enables given timer interrupt
+ */
+void enableTimerInterrupt(enum Timer timer)
+{
+	switch (timer)
+	{
+		case TIMER0:
+			*pTIMER0_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER1:
+			*pTIMER1_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER2:
+			*pTIMER2_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER3:
+			*pTIMER3_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER4:
+			*pTIMER4_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER5:
+			*pTIMER5_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER6:
+			*pTIMER6_CONFIG |= IRQ_ENA;
+			SSYNC;
+			break;
+		case TIMER7:
+			*pTIMER7_CONFIG |= IRQ_ENA;
 			SSYNC;
 			break;
 		default:
@@ -402,6 +480,14 @@ void INTERRUPT_timer(void)
 	unsigned int status;
 
 	status = *pTIMER_STATUS;
+	// timer 3 -> end of pulse measurement
+	if (status & TIMIL3)
+	{
+		// clear
+		*pTIMER_STATUS |= TIMIL3;
+		timer_disableTimer(TIMER3);
+		_timerPwmWidths[TIMER3] = *pTIMER3_WIDTH;
+	}
 	// reached to end of period
 	if (status & TIMIL5)
 	{
@@ -420,4 +506,16 @@ void INTERRUPT_timer(void)
 		io_enableBallSensorInterrupt();
 	}
 	debug_setDebugInfo(status);
+}
+
+/*
+ * Gets the timer's width. It is used in width capture mode
+ */
+unsigned long timer_getTimerWidth(enum Timer timer)
+{
+	unsigned long width;
+	disableTimerInterrupt(timer);
+	width = _timerPwmWidths[timer];
+	enableTimerInterrupt(timer);
+	return width;
 }

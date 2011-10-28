@@ -1,0 +1,30 @@
+/*
+ * remoteControl.h
+ *
+ *  Created on: 24.10.2011
+ *      Author: pes
+ */
+
+#ifndef REMOTECONTORL_H_
+#define REMOTECONTROL_H_
+
+//////////////////////////////
+// Public global constant definitions
+//////////////////////////////
+
+
+//////////////////////////////
+// Public global type definitions
+//////////////////////////////
+
+
+//////////////////////////////
+// Public global functions
+//////////////////////////////
+extern void remoteControl_run(void);
+
+//////////////////////////////
+// Public global variables
+//////////////////////////////
+
+#endif /* REMOTECONTORL_H_ */

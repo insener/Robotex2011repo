@@ -28,6 +28,7 @@
 #include "sdcard.h"
 #include "srv.h"
 #include "timer.h"
+#include "io.h"
 
 //////////////////////////////
 // Private global functions
@@ -462,7 +463,7 @@ void initPWM() {
     width = ((PERIPHERAL_CLOCK / 1000) * 1) / 100;
 	// configure timers 2 and 3 for PWM (H-bridge interface)
     //*pPORT_MUX = 0;  // don't do this - it clobbers timers 6/7
-    *pPORTF_FER |= 0x00C0;  // configure PF6 and PF7 as TMR3 and TMR2
+    *pPORTF_FER |= TIMER2_PIN | TIMER3_PIN; //0x00C0;  // configure PF6 and PF7 as TMR3 and TMR2
    /* *pTIMER2_CONFIG = PULSE_HI | PWM_OUT | PERIOD_CNT;
     *pTIMER2_PERIOD = PERIPHERAL_CLOCK / 1000;                // 1000Hz
     *pTIMER2_WIDTH = ((PERIPHERAL_CLOCK / 1000) * 1) / 100; 
