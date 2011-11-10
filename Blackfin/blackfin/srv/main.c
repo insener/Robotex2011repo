@@ -58,11 +58,12 @@ void initializeModules(void)
 
     init_heap();
     io_initPeriphery(); // Initialise LED, GPIO, serial flow & lasers,
-    srv_initPWM();		// motor PWM timers
+    //srv_initRobotFunctions();		// motor PWM and IR receiver timers
     systemTime_init();
     timer_init();
-    uart_initUart0(UART0_BAUDRATE);
-    uart_initUart1(UART1_BAUDRATE);
+    uart_uart0Init(UART0_BAUDRATE);
+    uart_uart1Init(UART1_BAUDRATE);
+    //uart_uart2Init();
     clear_sdram(); // Clears from 0x00100000 to 0x02000000
     camera_setup(frame);
     colors_init(); 			// dependant on camera setup
@@ -75,47 +76,18 @@ void initializeModules(void)
  */
 int main()
 {
-    int rtcMs = 0;
-    unsigned int ballSensor = 0;
-    int time, ballTime = 0;
-
     initializeModules();
 
     while (1)
     {
-   // 	if (io_isPlaySwitchOn())
-   // 	{
+    	/*if (srv_isPlaySwitchOn())
+    	{
     		soccer_run();
-   /* 	}
+    	}
     	else
-    	{
+    	{*/
     		remoteControl_run();
-    	}
-    	if ((systemTime_readRTC() - rtcMs) > 1000)
-    	{
-    		rtcMs = systemTime_readRTC();
-    		//serial_out_time();
-    		io_LED2Toggle();
-
-    		//printf("%d", ballSensor);
-    	}
-    	if (ballSensor == 0)
-    	{
-    		ballSensor = io_getBallSensorCount();
-    	}
-    	if (ballSensor == 1)
-    	{
-    		ballTime = systemTime_readRTC();
-    		ballSensor = 2;
-    	}
-    	time = systemTime_readRTC();
-    	if ( (ballSensor == 2) && ((time - ballTime) > 2000) )
-    	{
-    		srv_relayOff();
-    		io_enableBallSensorInterrupt();
-    		ballSensor = 0;
-    	}
-*/
+    	//}
     }
 }
 

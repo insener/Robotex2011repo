@@ -28,8 +28,11 @@
 
 #define MATCHPORT_RTS0		PH0  //  external pin 17
 #define BATTERY				PH2  //  external pin 19
+#define RELAY_DIRECTION		PH4  //  external pin 21
 #define UART0_FLOW_CRTL		PH6  //  external pin 23
-#define TEST_OUTPUT			PH10 //  external pin 27
+#define LASER2				PH9  //  external pin 26
+#define UART2_TX			PH10 //  external pin 27
+//#define TEST_OUTPUT			UART2_TX
 #define BALL_SENSOR			PH11 //  external pin 28
 #define IR_DIST_LEFT        PH12 //  external pin 29
 #define IR_DIST_RIGHT       PH13 //  external pin 30
@@ -57,8 +60,9 @@ extern void 		io_LED2Clear(void);
 extern void 		io_LED2Toggle(void);
 extern void			io_enableBallSensorInterrupt(void);
 extern void			io_disableBallSensorInterrupt(void);
-extern int			io_isPlaySwitchOn(void);
-
+extern void 		io_togglePortHPin(int pin);
+extern void 		io_setPortHPin(int pin);
+extern void 		io_clearPortHPin(int pin);
 //////////////////////////////
 // Public global variables
 //////////////////////////////

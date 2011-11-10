@@ -98,11 +98,8 @@ void systemTime_init()
 {
 	// set up real time clock
 	initializeRTC();
-	// set up peripheral timer 3 for IR beacon receiver, note that starts measuring from falling edge
-	// PERIOD_CNT = 0, PULSE_HI = 0, disable and enable the timer in interrupt
-	timer_configureTimer(TIMER3, WDTH_CAP | EMU_RUN, WDTHCAP, PERIPHERAL_CLOCK, 1);
-	timer_configureTimerInterrupt(TIMER3);
-	timer_enableTimer(TIMER3);
+
+	//timer_enableTimer(TIMER3);
 /*	*pPORTF_FER |= TIMER3_PIN;
 	// *pTIMER3_PERIOD = ??;
 	// *pTIMER3_WIDTH  = ??;

@@ -21,6 +21,10 @@
 // Private global constant definitions
 //////////////////////////////
 
+/*image processing constants*/
+#define CORRECTIVE_HEIGHT_CONSTANT 	10  // 22
+#define ORANGE_V_LOW_LIMIT 		   170
+#define ORANGE_V_HIGH_LIMIT  	   250
 
 //////////////////////////////
 // Type definitions
@@ -38,6 +42,8 @@ void 		 addline(unsigned char *outbuf, int slope, int intercept);
 void		 addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned int y1, unsigned int y2);
 void		 setPixel(unsigned char *inbuf, int x, int y, int *fault);
 int			 markGolfBall(unsigned char *inbuf, int x, int y, int radius);
+unsigned int singleLineScan(unsigned char *inbuf, GolfBall* golfBalls);
+unsigned int multipleLineScan(unsigned char *inbuf, GolfBall* golfBalls);
 
 //////////////////////////////
 // Private global variables
@@ -692,11 +698,15 @@ void addbox(unsigned char *outbuf, unsigned int x1, unsigned int x2, unsigned in
  */
 unsigned int colors_searchGolfBalls(unsigned char *inbuf, GolfBall* golfBalls)
 {
-	const unsigned char CORRECTIVE_HEIGHT_CONSTANT = 17;
-	/*image processing constants*/
-	const unsigned int ORANGE_V_LOW_LIMIT = 170;
-	const unsigned int ORANGE_V_HIGH_LIMIT = 250;
+	//return singleLineScan(inbuf, golfBalls);
+	return multipleLineScan(inbuf, golfBalls);
+}
 
+/*
+ * Searches orange golf balls with single line scan
+ */
+unsigned int singleLineScan(unsigned char *inbuf, GolfBall* golfBalls)
+{
 	unsigned int start;
 	unsigned int end;
 	unsigned int y;
@@ -800,6 +810,129 @@ unsigned int colors_searchGolfBalls(unsigned char *inbuf, GolfBall* golfBalls)
 		golfBalls[ballIndex].ballX = (_imgWidth - golfBalls[ballIndex].ballDiam);
 		golfBalls[ballIndex].ballY = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + rowIndex;
 		golfBalls[ballIndex].ballIdent = ballIndex;
+		ballIndex++;
+	}
+
+	for (i = 0; i < ballIndex; i++)
+	{
+		markGolfBall(inbuf, golfBalls[i].ballX, golfBalls[i].ballY, golfBalls[i].ballDiam);
+	}
+
+	return ballIndex;
+}
+
+/*
+ * Searches orange golf balls with multiple line scan
+ */
+unsigned int multipleLineScan(unsigned char *inbuf, GolfBall* golfBalls)
+{
+	//const int CORRECTIVE_CONST = 10; //22;
+	const int LINE_SUB = 3;
+	unsigned int lineStart[3];
+	int ballIndex;
+	int newBall;
+	int state;
+	int rowStep;
+	unsigned int i, j;
+
+	// do multiple line scan, find start posistions
+	lineStart[0] = index(0, _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT);
+	lineStart[1] = index(0, _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + LINE_SUB);
+	lineStart[2] = index(0, _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + 2 * LINE_SUB);
+	// initialize rest of the variables
+	ballIndex = 0;
+	rowStep = _imgWidth * 2;
+	newBall = 0;
+	state = noBall;
+	// nill the buffer
+	for (i = 0; i < MAX_GOLF_BALLS; i++)
+	{
+		golfBalls[i].ballIdent = 0;
+		golfBalls[i].ballDiam = 0;
+		golfBalls[i].ballX = 0;
+		golfBalls[i].ballY = 0;
+	}
+
+	// take all the rows at same time
+	for (i = 0, j = 0; i < (_imgWidth * 2 - 4); i = i + 4)
+	{
+		switch (state)
+		{
+			case noBall:
+				// filter orange using only V value
+				for (j = 0; j < 3; j++)
+				{
+					if ( (*(inbuf + lineStart[j] + 2) > ORANGE_V_LOW_LIMIT) && (*(inbuf + lineStart[j] + 2) < ORANGE_V_HIGH_LIMIT) )
+					{
+					//	ballDiam[ballIndex]++;
+						golfBalls[ballIndex].ballDiam++;
+						state = extendBall;
+						// take the firstly found row as dominant one
+						break;
+					}
+				}
+				break;
+			case extendBall:
+				// find how far the orange goes
+				if ( (*(inbuf + lineStart[j] + 2) > ORANGE_V_LOW_LIMIT) && (*(inbuf + lineStart[j] + 2) < ORANGE_V_HIGH_LIMIT) )
+				{
+					//*(outbuf + lineStart[j]) = *(inbuf + lineStart[j]);
+					//ballDiam[ballIndex]++;
+					golfBalls[ballIndex].ballDiam++;
+				}
+				else  // end of orange -> take a closer search
+				{
+					state = closerSearch;
+				}
+				break;
+			case closerSearch:
+				// observe upper and lower row
+				if ( ((*(inbuf + lineStart[j] + 2 + rowStep) > ORANGE_V_LOW_LIMIT) && (*(inbuf + lineStart[j] + 2 + rowStep) < ORANGE_V_HIGH_LIMIT)) ||
+						((*(inbuf + lineStart[j] + 2 - rowStep) > ORANGE_V_LOW_LIMIT) && (*(inbuf + lineStart[j] + 2 - rowStep) < ORANGE_V_HIGH_LIMIT)) )
+				{
+					// continue with the same ball, add previous and this pixel
+					//ballDiam[ballIndex] += 2;
+					golfBalls[ballIndex].ballDiam += 2;
+					state = extendBall;
+				}
+				else
+				{
+					//end of ball -> calculate ball info
+					//ballDiam[ballIndex] = ballDiam[ballIndex]; // divide by 2 as 1 pixel involves 2 bytes
+					//ballX[ballIndex] = i / 2 - 2 - ballDiam[ballIndex];
+					golfBalls[ballIndex].ballX = i / 2 - 2 - golfBalls[ballIndex].ballDiam;
+					//ballY[ballIndex] = imgHeight / 2 - CORRECTIVE_CONST + j * LINE_SUB;
+					golfBalls[ballIndex].ballY = _imgHeigth / 2 - CORRECTIVE_HEIGHT_CONSTANT + j * LINE_SUB;
+					ballIndex++;
+					if (ballIndex >= MAX_GOLF_BALLS)
+					{
+						//end of search
+						state = endOfSearch;
+					}
+					else
+					{
+						// start looking for next ball
+						state = noBall;
+					}
+				}
+				break;
+			case endOfSearch:
+				i = _imgWidth * 2;
+				break;
+			default:
+				break;
+		}
+		lineStart[0] = lineStart[0] + 4;
+		lineStart[1] = lineStart[1] + 4;
+		lineStart[2] = lineStart[2] + 4;
+	}
+	// check if the ball was cut by scene
+	if (state == extendBall)
+	{
+		//ballX[ballIndex] = (imgWidth - ballDiam[ballIndex]);
+		golfBalls[ballIndex].ballX = (_imgWidth - golfBalls[ballIndex].ballDiam);
+		//ballY[ballIndex] = imgHeight / 2 - CORRECTIVE_CONST + j * LINE_SUB;
+		golfBalls[ballIndex].ballY = _imgWidth / 2 - CORRECTIVE_HEIGHT_CONSTANT + j * LINE_SUB;
 		ballIndex++;
 	}
 

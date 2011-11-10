@@ -36,12 +36,16 @@ volatile unsigned int _ballSensorCount = 0;
  */
 void io_initPeriphery(void)
 {
+	// enable TMR2 for relay, TMR3 for IR beacon left reception and TMR7 for IR beacon right reception
+	//*pPORTF_FER |= TIMER2_PIN | TIMER3_PIN | TIMER7_PIN;
+
 	*pPORTGIO_DIR   = LED1 | LED2;      					  // LEDs (PG8 and PG9)
 	*pPORTGIO		= 0x0000;								  // clear LED states
 	*pPORTH_FER     = 0x0000;           					  // set portH for GPIO
-	*pPORTHIO_DIR   = UART0_FLOW_CRTL | TEST_OUTPUT;  		  // set PORTH6 to output for serial flow control
-	*pPORTHIO       = 0x0000;           					  // set output low
-	*pPORTHIO_INEN  = MATCHPORT_RTS0 | BALL_SENSOR | BATTERY; // enable inputs: Matchport RTS0 (H0), ball sensor (H1), battery (H2)
+	// GPIO outputs are serial flow control, UART2 Tx, and relay control (LASER2)
+	*pPORTHIO_DIR   = UART0_FLOW_CRTL | UART2_TX | LASER2;
+	*pPORTHIO       = 0x0000;           					  // set play output high, all others low
+	*pPORTHIO_INEN  = MATCHPORT_RTS0 | BALL_SENSOR | BATTERY | PLAY_SWITCH_IN; // enable inputs: Matchport RTS0 (H0), ball sensor (H1), battery (H2)
 	//*pPORTHIO_DIR  |= 0x0380;   // set up lasers - note that GPIO-H8 is used for SD SPI select on RCM board
 	//*pPORTHIO |= 0x0100;      // set GPIO-H8 high in case it's used for SD SPI select
 
@@ -153,16 +157,26 @@ void io_LED2Toggle(void)
 }
 
 /*
- * Checks if Play switch is switched ON
+ * Toggle Port H pin
  */
-int io_isPlaySwitchOn(void)
+void io_togglePortHPin(int pin)
 {
-	if (*pPORTHIO & PLAY_SWITCH_IN)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	*pPORTHIO_TOGGLE = pin;
 }
+
+/*
+ * Sets Port H pin
+ */
+void io_setPortHPin(int pin)
+{
+	*pPORTHIO_SET = pin;
+}
+
+/*
+ * clears Port H pin
+ */
+void io_clearPortHPin(int pin)
+{
+	*pPORTHIO_CLEAR = pin;
+}
+

@@ -9,11 +9,13 @@
 #include "srv.h"
 #include "io.h"
 #include "debug.h"
+#include "uart.h"
 
 //////////////////////////////
 // Private global constant definitions
 //////////////////////////////
 #define TIMER_COUNT  8
+
 
 //////////////////////////////
 // Type definitions
@@ -38,9 +40,7 @@ unsigned long _timerPwmWidths[TIMER_COUNT] = {0};
  */
 void timer_init(void)
 {
-	// timer 5 for ball sensor and relay activating
-	//timer_configureTimer(TIMER5, PERIOD_CNT, INTERNAL, PERIPHERAL_CLOCK, PERIPHERAL_CLOCK);  // 1 sec. period
-	//timer_configureTimerInterrupt(TIMER5);
+
 }
 
 /*
@@ -160,21 +160,22 @@ void timer_configureTimer(enum Timer timer, unsigned short config, enum TimerMod
 			}
 			break;
 		case TIMER7:
-			*pTIMER7_CONFIG = config;
-			*pTIMER7_PERIOD = period;
-			*pTIMER7_WIDTH  = width;
+			*pPORTF_FER |= TIMER7_PIN;
 			switch(type)
 			{
-				case PWMOUT:
-					// set PWM output
-					*pPORTF_FER |= TIMER7_PIN;
+				case WDTHCAP:
+					*pTIMER7_PERIOD = period;
+					*pTIMER7_WIDTH  = width;
+					*pTIMER7_CONFIG = config;
 					break;
+				case PWMOUT:
 				case INTERNAL:
 				default:
+					*pTIMER7_CONFIG = config;
+					*pTIMER7_PERIOD = period;
+					*pTIMER7_WIDTH  = width;
 					break;
 			}
-			break;
-		default:
 			break;
 	}
 }
@@ -483,29 +484,47 @@ void INTERRUPT_timer(void)
 	// timer 3 -> end of pulse measurement
 	if (status & TIMIL3)
 	{
-		// clear
+		// clear the flag
 		*pTIMER_STATUS |= TIMIL3;
 		timer_disableTimer(TIMER3);
 		_timerPwmWidths[TIMER3] = *pTIMER3_WIDTH;
 	}
-	// reached to end of period
+	// timer 3 overflow error
+	if (status & TOVL_ERR3)
+	{
+		// clear the flag
+		*pTIMER_STATUS |= TOVL_ERR3;
+		timer_disableTimer(TIMER3);
+	}
+	// reached to end of period -> shift out next character
 	if (status & TIMIL5)
 	{
-		// clear
+		// clear the flag
 		*pTIMER_STATUS |= TIMIL5;
-		timer_disableTimer(TIMER5);
-		srv_relayOff();
-		io_enableBallSensorInterrupt();
+
+		uart_uart2ShiftBitOut();
 	}
-	// overflow error
+	// timer 5 overflow error
 	if (status & TOVL_ERR5)
 	{
-		// clear
+		// clear the flag
 		*pTIMER_STATUS |= TOVL_ERR5;
 		timer_disableTimer(TIMER5);
-		io_enableBallSensorInterrupt();
 	}
-	debug_setDebugInfo(status);
+	if (status & TIMIL7)
+	{
+		// clear the flag
+		*pTIMER_STATUS |= TIMIL7;
+		timer_disableTimer(TIMER7);
+		_timerPwmWidths[TIMER7] = *pTIMER7_WIDTH;
+	}
+	// timer 7 overflow error
+	if (status & TOVL_ERR7)
+	{
+		// clear the flag
+		*pTIMER_STATUS |= TOVL_ERR7;
+		timer_disableTimer(TIMER7);
+	}
 }
 
 /*
@@ -519,3 +538,7 @@ unsigned long timer_getTimerWidth(enum Timer timer)
 	enableTimerInterrupt(timer);
 	return width;
 }
+
+
+
+

@@ -33,7 +33,9 @@
 //////////////////////////////
 // Private global functions
 //////////////////////////////
-void initIO();
+void initIO(void);
+void initRelay(void);
+void initIrBeaconReceivers(void);
 
 //////////////////////////////
 // Private global variables
@@ -92,9 +94,10 @@ unsigned int master;  // SVS master or slave ?
 unsigned int uart1_flag = 0;
 
 
-void srv_initPWM()
+void srv_initRobotFunctions()
 {
-	initPWM();
+	initRelay();
+	initIrBeaconReceivers();
 }
 
 void srv_initVariables()
@@ -177,20 +180,43 @@ void serial_out_flashbuffer () {
     }
 }
 
-/* Turn relay on. Uses left motor (M1) outputs M1+ and M1-
-   Serial protocol char: l */
+
+/*
+ * Turn relay on. Uses left motor (M1) outputs M1+ and M1-
+ * Serial protocol char: l
+ */
 void srv_relayOn()
 {
-	setPWM(100,100);
+	//setPWM(100,100);
+	io_setPortHPin(LASER2);
     //printf("#l");
+
 }
 
-/* Turn relay off. Uses left motor (M1) outputs M1+ and M1-
-   Serial protocol char: L */
+/*
+ *  Turns relay off. Uses left motor (M1) outputs M1+ and M1-
+ *  Serial protocol char: L
+ */
 void srv_relayOff()
 {
-	setPWM(0,0);
+	//setPWM(0,0);
+	io_clearPortHPin(LASER2);
 	//printf("#L");
+}
+
+/*
+ * Checks if Play switch is switched ON
+ */
+int srv_isPlaySwitchOn(void)
+{
+	if (*pPORTHIO & PLAY_SWITCH_IN)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void check_battery() { // 'D' command
@@ -222,8 +248,10 @@ void srv_grabProcessAndSendFrame()
 	}
 }
 
-/* JPEG compress and send frame captured by grab_frame()
-   Serial protocol char: I */
+/*
+ * JPEG compress and send frame captured by grab_frame()
+ * Serial protocol char: I
+ */
 void srv_sendFrame () {
     unsigned char i2c_data[2];
     unsigned char ch;
@@ -304,22 +332,24 @@ void srv_sendFrame () {
     }
 }
 
-// send raw YUV picture data
+/*
+ * Sends raw YUV picture data
+ */
 void srv_sendRawYUV(unsigned char *srcBuffer)
 {
 	// Current frame buffer
 	unsigned char *frameBuffer = srcBuffer;
 
 	// send header first
-	printf("##rawYUVstart\r\n");
-	systemTime_delayUS(20);
+	//printf("##rawYUVstart\r\n");
+	//systemTime_delayUS(20);
 	// Format is U Y1 V Y2, where Y1 and Y2 is brightness for pixels #1 and #2.
 	// U and V are common for both pixels.
 	for (ix = 0; ix < (imgWidth * imgHeight) * 2; ix++)
 		putchar(*frameBuffer++);
 	// send tale afterwards
-	systemTime_delayUS(200);
-	printf("##rawYUVstop\r\n");
+	//systemTime_delayUS(200);
+	//printf("##rawYUVstop\r\n");
 	return;
 }
 
@@ -334,7 +364,8 @@ void srv_sendRawYUVVideo(unsigned char **srcBuffer)
 
 /* Turn image overlay on.
    Serial protocol char: o */
-void srv_overlayOn () {
+void srv_overlayOn ()
+{
     overlay_flag = 1;
     printf("#o");
 }
@@ -342,7 +373,8 @@ void srv_overlayOn () {
 
 /* Turn image overlay off.
    Serial protocol char: O */
-void srv_overlayOff () {
+void srv_overlayOff ()
+{
     overlay_flag = 0;
     printf("#O");
 }
@@ -396,7 +428,8 @@ void set_caption(unsigned char *str, unsigned int width) {
         iWabcd - i2c write device a, data b, c, d, return '##ix'
         idabcde - i2c dual write device a, register1 b, data1 c, register2 d, data2 e, return '##ix'
    Serial protocol char: i */
-void process_i2c() {
+void process_i2c(void)
+{
     unsigned char i2c_device, i2c_data[16], cx, count, c1, c2;
     
     switch ((unsigned char)getch()) {
@@ -454,29 +487,30 @@ void process_i2c() {
     }
 }
 
-void initPWM() {
+/*
+ * Configure timers 2 for PWM (H-bridge interface) to drive relay, PIN initialization
+ * is done in IO module io_initPeriphery
+ */
+void initRelay(void)
+{
     unsigned short config;
     unsigned long period, width;
 
     config = PULSE_HI | PWM_OUT | PERIOD_CNT;
     period = PERIPHERAL_CLOCK / 1000;
     width = ((PERIPHERAL_CLOCK / 1000) * 1) / 100;
-	// configure timers 2 and 3 for PWM (H-bridge interface)
-    //*pPORT_MUX = 0;  // don't do this - it clobbers timers 6/7
-    *pPORTF_FER |= TIMER2_PIN | TIMER3_PIN; //0x00C0;  // configure PF6 and PF7 as TMR3 and TMR2
-   /* *pTIMER2_CONFIG = PULSE_HI | PWM_OUT | PERIOD_CNT;
-    *pTIMER2_PERIOD = PERIPHERAL_CLOCK / 1000;                // 1000Hz
-    *pTIMER2_WIDTH = ((PERIPHERAL_CLOCK / 1000) * 1) / 100; 
-    *pTIMER_ENABLE = TIMEN2; //| TIMEN3;*/
-    timer_configureTimer(TIMER2, config, PWMOUT, period, width);
-    timer_enableTimer(TIMER2);
 
-    *pPORTHIO_DIR |= 0x0030;  // set PORTH4 and PORTH5 to output for direction control
-    *pPORTHIO &= 0xFFCF;      // set output low 
+    timer_configureTimer(TIMER2, config, PWMOUT, period, width);
+    //timer_enableTimer(TIMER2);
+
+    //*pPORTHIO_DIR |= 0x0030;  // set PORTH4 and PORTH5 to output for direction control
+    //*pPORTHIO &= 0xFFCF;      // set output low
     //*pPORTHIO |= 0x0030;  
 }
 
-void setPWM (int mleft, int mright) {
+
+void setPWM (int mleft, int mright)
+{
     unsigned long width;
 
 	if (mleft < 0) {
@@ -507,6 +541,18 @@ void setPWM (int mleft, int mright) {
     //*pTIMER3_WIDTH = ((PERIPHERAL_CLOCK / 1000) * mright) / 100;
 }
 
+/*
+ * Initializes IR beacon receivers. Left side is connected to TMR7, right side to TMR3
+ */
+void initIrBeaconReceivers(void)
+{
+	// Set up peripheral timers 3 and 7 for IR beacon receivers, note that starts measuring from falling edge
+	// PERIOD_CNT = 0, PULSE_HI = 0, disable and enable the timer in interrupt
+	timer_configureTimer(TIMER3, WDTH_CAP | EMU_RUN, WDTHCAP, PERIPHERAL_CLOCK, 1);
+	timer_configureTimerInterrupt(TIMER3);
+	timer_configureTimer(TIMER7, WDTH_CAP | EMU_RUN, WDTHCAP, PERIPHERAL_CLOCK, 1);
+	timer_configureTimerInterrupt(TIMER7);
+}
 
 
 

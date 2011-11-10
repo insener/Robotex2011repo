@@ -49,6 +49,7 @@ extern void 		 timer_configureTimerInterrupt(enum Timer timer);
 extern void 		 timer_enableTimer(enum Timer timer);
 extern void 		 timer_disableTimer(enum Timer timer);
 extern unsigned long timer_getTimerWidth(enum Timer timer);
+extern void			 timer_setUART2character(unsigned char c);
 
 //////////////////////////////
 // Public global variables

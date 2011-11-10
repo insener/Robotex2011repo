@@ -16,6 +16,8 @@
 #include "uart.h"
 #include "srv.h"
 #include "systemTime.h"
+#include "timer.h"
+#include "io.h"
 
 //////////////////////////////
 // Private global constant definitions
@@ -23,6 +25,8 @@
 #define SUART_SEND0 *pPORTHIO |= 0x4000
 #define SUART_SEND1 *pPORTHIO &= 0xBFFF
 #define SUART_RECV  (*pPORTHIO & 0x8000)
+#define UART2_SHIFT_COUNT 10
+#define UART2_BUFFER	  10
 
 //////////////////////////////
 // Type definitions
@@ -37,7 +41,9 @@
 //////////////////////////////
 // Private global variables
 //////////////////////////////
-
+unsigned int  _uart2Chars[UART2_BUFFER] = {0};   // it is an 'int' buffer, because stop and start bits will be added
+unsigned int  _uart2ByteCount = 0;
+unsigned int  _uart2ShiftCount = 0;
 
 void waituntilNS(unsigned int target) {
     if (target > PERIPHERAL_CLOCK) {
@@ -49,12 +55,15 @@ void waituntilNS(unsigned int target) {
         continue;
 }
 
-void uart_initUart0(int baudrate)
+/*
+ * Initializes UART0 module
+ */
+void uart_uart0Init(int baudrate)
 {
     int uart_divider;
 
     uart_divider = (((MASTER_CLOCK * VCO_MULTIPLIER) / SCLK_DIVIDER) / 16) / baudrate;
-    *pPORTF_FER |= 0x0003;  // enable UART0 pins
+    *pPORTF_FER |= PF0 | PF1; //0x0003;  // enable UART0 pins
     *pUART0_GCTL = UCEN;
     *pUART0_LCR = DLAB;
     *pUART0_DLL = uart_divider;
@@ -76,12 +85,15 @@ void uart0_CTS(int ix)  // set ~CTS signal.  1 = clear to send   0 = not clear t
         *pPORTHIO &= 0xFFBF;  // allow incoming data 
 }
 
-void uart_initUart1(int baudrate)
+/*
+ * Initializes UART1 module
+ */
+void uart_uart1Init(int baudrate)
 {
     int uart_divider;
 
     uart_divider = (((MASTER_CLOCK * VCO_MULTIPLIER) / SCLK_DIVIDER) / 16) / baudrate;
-    *pPORTF_FER |= 0x000C;  // enable UART1 pins
+    *pPORTF_FER |= PF2 | PF3; //0x000C;  // enable UART1 pins
     *pUART1_GCTL = UCEN;
     *pUART1_LCR = DLAB;
     *pUART1_DLL = uart_divider;
@@ -96,8 +108,10 @@ void uart_initUart1(int baudrate)
 
 void uart0SendChar(unsigned char c)
 {
+#ifdef HW_FLOW_CONTROL
     while (*pPORTHIO & 0x0001)  // hardware serial flow control - 
         continue;               //    S32 pin 17 should be grounded to disable
+#endif
     while (!(*pUART0_LSR & THRE))
         continue;
     *pUART0_THR = c;
@@ -129,13 +143,6 @@ unsigned char uart0GetChar(unsigned char *a)
     if (!(*pUART0_LSR & DR))
         return 0;
     *a = *pUART0_RBR;
-    return 1;
-}
-
-unsigned char uart0Signal()
-{
-    if (!(*pUART0_LSR & DR))
-        return 0;
     return 1;
 }
 
@@ -181,78 +188,103 @@ unsigned char uart_uart1Signal()
     return 1;
 }
 
-/*****************************************************************************
- *
- * Description:
- *    Routine for printing integer numbers in various formats. The number is 
- *    printed in the specified 'base' using exactly 'noDigits', using +/- if 
- *    signed flag 'sign' is TRUE, and using the character specified in 'pad' 
- *    to pad extra characters. 
- *
- * Params:
- *    [in] base     - Base to print number in (2-16) 
- *    [in] noDigits - Number of digits to print (max 32) 
- *    [in] sign     - Flag if sign is to be used (TRUE), or not (FALSE) 
- *    [in] pad      - Character to pad any unused positions 
- *    [in] number   - Signed number to print 
- *
- ****************************************************************************/
-void
-printNumber(unsigned char  base,
-            unsigned char  noDigits,
-            unsigned char  sign,
-            unsigned char  pad,
-            int number)
+/*
+ * Initializes UART2 module, which is done purely in SW using one of the regular GPIOs.
+ * Fixed baud rate: 38400, 1 start bit, 8 data bits, 1 stop bit, no parity
+ */
+void uart_uart2Init(void)
 {
-  static unsigned char  hexChars[16] = "0123456789ABCDEF";
-  unsigned char        *pBuf;
-  unsigned char         buf[32];
-  unsigned int        numberAbs;
-  unsigned int        count;
+	unsigned long period = (PERIPHERAL_CLOCK / 100);  // try 3250
+	unsigned long width = (PERIPHERAL_CLOCK / 100);
 
-  // prepare negative number
-  if(sign && (number < 0))
-    numberAbs = -number;
-  else
-    numberAbs = number;
-
-  // setup little string buffer
-  count = (noDigits - 1) - (sign ? 1 : 0);
-  pBuf = buf + sizeof(buf);
-  *--pBuf = '\0';
-
-  // force calculation of first digit
-  // (to prevent zero from not printing at all!!!)
-  *--pBuf = hexChars[(numberAbs % base)];
-  numberAbs /= base;
-
-  // calculate remaining digits
-  while(count--)
-  {
-    if(numberAbs != 0)
-    {
-      //calculate next digit
-      *--pBuf = hexChars[(numberAbs % base)];
-      numberAbs /= base;
-    }
-    else
-      // no more digits left, pad out to desired length
-      *--pBuf = pad;
-  }
-
-  // apply signed notation if requested
-  if(sign)
-  {
-    if(number < 0)
-      *--pBuf = '-';
-    else if(number > 0)
-       *--pBuf = '+';
-    else
-       *--pBuf = ' ';
-  }
-
-  // print the string right-justified
-  uart0SendString(pBuf);
+	// timer 5 for generating software UART clock, disable output
+	timer_configureTimer(TIMER5, PWM_OUT | PERIOD_CNT | OUT_DIS, PWMOUT, period, width);  // 26 us period
+	timer_configureTimerInterrupt(TIMER5);
 }
+
+/*
+ * Copies characters into UART2 buffer to shift them out.
+ * Start and stop bits are added.
+ */
+void uart_uart2SetCharsToBuffer(unsigned char *cBuf, int numberOfChars)
+{
+	unsigned int i, character;
+
+	timer_disableTimer(TIMER5);
+	if (numberOfChars <= UART2_BUFFER)
+	{
+		for (i = 0; i < numberOfChars; i++)
+		{
+			character = *(cBuf + i);
+			// add start and stop bits
+			character = (character << 1) & ~0x01;
+			character |= 0x200;
+			// add to buffer
+			_uart2Chars[i] = character;
+		}
+		_uart2ByteCount = numberOfChars;
+	}
+}
+
+/*
+ * Sends given characters, enable UART clock generating timer
+ */
+void uart_uart2SendBuffer(void)
+{
+	timer_enableTimer(TIMER5);
+}
+
+/*
+ * Shifts out the bit of the character into GPIO pin.
+ * NB!!! Called only in the interrupt routine
+ */
+void uart_uart2ShiftBitOut(void)
+{
+	// check if any bytes to send
+	if (_uart2ByteCount != 0)
+	{
+		if (_uart2ShiftCount < (UART2_SHIFT_COUNT - 1))
+		{
+			// send a bit
+			if (_uart2Chars[_uart2ByteCount - 1] & 0x01)
+			{
+				io_setPortHPin(UART2_TX);
+			}
+			else
+			{
+				io_clearPortHPin(UART2_TX);
+			}
+			// shift next bit for sending
+			_uart2Chars[_uart2ByteCount - 1] = _uart2Chars[_uart2ByteCount - 1] >> 1;
+			_uart2ShiftCount++;
+		}
+		else if (_uart2ShiftCount == UART2_SHIFT_COUNT - 1)
+		{
+			// stop bit is high
+			io_setPortHPin(UART2_TX);
+			// if last byte, then disable timer
+			if (_uart2ByteCount == 1)
+			{
+				timer_disableTimer(TIMER5);
+				_uart2ByteCount = 0;
+			}
+			else
+			{
+				// take next byte
+				_uart2ByteCount--;
+			}
+			// clear the shift count anyway
+			_uart2ShiftCount = 0;
+		}
+		else
+		{
+			// should not happen, but just in case
+			timer_disableTimer(TIMER5);
+			_uart2ByteCount = 0;
+			_uart2ShiftCount = 0;
+		}
+	}
+}
+
 
 

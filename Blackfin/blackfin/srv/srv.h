@@ -20,7 +20,7 @@
 /* Misc Init */
 //void init_io ();
 //void init_videoBuffer(void);
-extern void srv_initPWM();
+extern void srv_initRobotFunctions();
 extern void srv_initVariables();
 void clear_sdram ();
 void init_heap ();
@@ -40,25 +40,27 @@ void serial_out_flashbuffer ();
 void process_i2c();
 
 /* Analog */
-void init_analog();
+void 		 init_analog();
 unsigned int analog(unsigned int);
-void read_analog();
-void read_analog_4wd();
+void 		 read_analog();
+void 		 read_analog_4wd();
 unsigned int analog_4wd(unsigned int);
 
 /* Relay*/
-void srv_relayOn();
-void srv_relayOff();
+void srv_relayOn(void);
+void srv_relayOff(void);
+
+/* Switch */
+int	 srv_isPlaySwitchOn(void);
 
 /* Image */
-void srv_sendFrame();
-void srv_grabProcessAndSendFrame();
+void srv_sendFrame(void);
+void srv_grabProcessAndSendFrame(void);
 void srv_sendRawYUV(unsigned char *srcBuffer);
 void srv_sendRawYUVVideo(unsigned char **srcBuffer);
-void srv_relayOn();
-void srv_overlayOn();
-void srv_overlayOff();
-void srv_changeImageQuality ();
+void srv_overlayOn(void);
+void srv_overlayOff(void);
+void srv_changeImageQuality (void);
 void set_caption (unsigned char *str, unsigned int width);
 
 /* Colors */
@@ -74,7 +76,6 @@ void init_servos();
 void motor_set (unsigned char cc, int speed, int *ls, int *rs);
 void ppm1_command ();
 void ppm2_command ();
-void initPWM ();
 void setPWM (int mleft, int mright);
 
 

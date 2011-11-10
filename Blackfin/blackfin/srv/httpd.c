@@ -681,27 +681,6 @@ void httpd_request(char firstChar)
                     contentType = "text/plain";
                     new_content = 1;
                     break;
-                case 'l':  // l1 = lasers on, l0 = lasers off
-                    if (params[1] == '1')
-                        *pPORTHIO |= 0x0280;
-                    else
-                        *pPORTHIO &= 0xFD7F;
-                    break;
-                case 'm':  // SRV-1 Robot motor drive (PWM)
-                    if ((params[1]<'0') || (params[1]>'9') || (params[2]<'0') || (params[2]>'9')  // out of range 
-                            || (params[3]<'0') || (params[3]>'9') || (params[4]<'0') || (params[4]>'9'))  
-                        break;
-                    if (!pwm1_init) {
-                        initPWM();
-                        pwm1_init = 1;
-                        pwm1_mode = PWM_PWM;
-                        base_speed = 40;
-                        lspeed = rspeed = 0;
-                    }
-                    lspeed = ((int)atoi_b10(&params[1]) * 2) - 100;
-                    rspeed = ((int)atoi_b10(&params[3]) * 2) - 100;
-                    setPWM(lspeed, rspeed);
-                    break;
             }
             
             if (new_content == 0) {  // if command processing didn't generate new content

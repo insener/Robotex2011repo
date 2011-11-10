@@ -188,6 +188,8 @@ void camera_setup (frameSize frame)
     }
     initializeHW((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2, _imgWidth, _imgHeight);
     camera_run();
+    // invert video as camera is upside down
+    camera_invertVideo();
 }
 
 /*
@@ -337,7 +339,7 @@ unsigned char** camera_grabVideo(void)
 			moveImage((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2,
 													_videoBuffer[i], _imgWidth, _imgHeight);
 		}
-		systemTime_delayMS(100);
+		systemTime_delayMS(40);
 	}
 	return _videoBufPointer;
 }

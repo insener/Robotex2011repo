@@ -4,7 +4,7 @@
  */
 
 #include "motion.h"
-#include "uart.h"
+#include "print.h"
 //////////////////////////////
 // Type definitions
 //////////////////////////////

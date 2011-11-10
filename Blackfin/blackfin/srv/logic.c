@@ -6,6 +6,9 @@
  */
 
 #include "logic.h"
+#include "print.h"
+#include "debug.h"
+#include "motion.h"
 
 //////////////////////////////
 // Type definitions
@@ -25,8 +28,8 @@
 //////////////////////////////
 // Private global functions
 //////////////////////////////
-int directionCalc(int* currentZone, int location);
-
+int  directionCalc(int* currentZone, int location);
+void setDebugData(int data);
 
 //////////////////////////////
 // Private global variables
@@ -35,6 +38,7 @@ GolfBall   	 _slideBuffer[MAX_GOLF_BALLS * SLIDE_WINDOW_COUNT];
 GolfBall*  	 _slideBufferPointers[SLIDE_WINDOW_COUNT];    //array of pointers
 unsigned int _bufferBallCount[SLIDE_WINDOW_COUNT];		  //stores the number of balls found in frame
 int		   	 _bufferIndexer;
+int 		 _debugIndex;
 
 /*
  * Initialize image buffer with slide window, so its is always compared 3 last images
@@ -49,6 +53,7 @@ void logic_init()
 		_bufferBallCount[i] = 0;
 	}
 	_bufferIndexer = 0;
+	_debugIndex = 0;
 }
 
 /*
@@ -64,6 +69,7 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 	int ballDiamBiggest = 0;
 	int ballExists = 0;
 	int direction = 0; // stop
+	int temp = 0;
 
 	// find ball with biggest diameter
 	for (i = 0; i < ballCount; i++)
@@ -91,7 +97,7 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 	// analyze history
 	decrementHist = index;
 	ballExists = 0;
-	for (i = HISTORY_SIZE; i == 0; i--)
+	for (i = HISTORY_SIZE; i > 0; i--)
 	{
 		// calculate ball existence probability, this method filters noise.
 		// latest measurement has highest weight
@@ -105,6 +111,7 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 		{
 			decrementHist--;
 		}
+		temp++;
 	}
 
 	// give some moving command only when a ball is seen
@@ -118,6 +125,19 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 		currentZone = 0;
 	}
 
+	//setDebugData(direction);
+	if (direction > 0)
+	{
+		motion_moveSide(100);
+	}
+	else if (direction < 0)
+	{
+		motion_moveSide(-100);
+	}
+	else
+	{
+		motion_stop();
+	}
 	// increment general history stamp
 	index++;
 	if (index >= HISTORY_SIZE)
@@ -128,7 +148,7 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 
 /*
  * Calculates motion direction, expects image width 320.
- * Location 0...320
+ * Location expected range 0...320
  */
 int directionCalc(int *currentZone, int location)
 {
@@ -139,7 +159,7 @@ int directionCalc(int *currentZone, int location)
 	{
 		newZone = 4;
 	}
-	else if (location > 0)
+	else if (location < 0)
 	{
 		newZone = -4;
 	}
@@ -155,7 +175,20 @@ int directionCalc(int *currentZone, int location)
 			newZone = newZone - 3;
 		}
 	}
-	if (newZone > *currentZone)
+	// set direction according to zone change
+	if ( (newZone == *currentZone) && ((newZone == -1) || (newZone == 1)) )
+	{
+		direction = 0;
+	}
+	else if ( (newZone == *currentZone) && (newZone > 1) )
+	{
+		direction = 1;
+	}
+	else if ( (newZone == *currentZone) && (newZone < -1) )
+	{
+		direction = -1;
+	}
+	else if (newZone > *currentZone)
 	{
 		direction = 1;
 	}
@@ -165,4 +198,18 @@ int directionCalc(int *currentZone, int location)
 	}
 	*currentZone = newZone;
 	return direction;
+}
+
+/*
+ * Sets data into local global array, which is printed out later at once.
+ * Current buffer size is 12, call get function after every 500 ms
+ */
+void setDebugData(int data)
+{
+	debug_setDebugInfo(data, _debugIndex);
+	_debugIndex++;
+	if (_debugIndex == DEBUG_BUFFER_SIZE)
+	{
+		_debugIndex = 0;
+	}
 }
