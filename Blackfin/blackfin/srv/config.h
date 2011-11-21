@@ -34,15 +34,22 @@
 
 /* UART config */
 
-//#define BLIND_MODE
-#ifdef BLIND_MODE
-	#define UART0_BAUDRATE 38400
-#else
-	#define UART0_BAUDRATE 230400 //2304000
+// choose the mode dependent on UART connection. Note that they exclude each other
+#define SERIAL_MODE
+//#define WIFI_MODE
+
+#ifdef SERIAL_MODE
+	#define UART0_BAUDRATE 230400 //115200
+	#define UART1_BAUDRATE 38400
+#endif
+
+#ifdef WIFI_MODE
+	#define UART0_BAUDRATE 2304000
 	#define HW_FLOW_CONTROL
 	#define UART1_BAUDRATE 38400
 #endif
 
+#define DEBUG
 
 // must be power of 2!
 #define FIFO_LENGTH  64

@@ -179,17 +179,17 @@ void camera_setup (frameSize frame)
 
     // write to camera
     for (ix=0; ix<3; ix++) {
-        systemTime_delayMS(100);
+        systemTime_delayMs(100);
         i2c_write(0x21, ov7725_qvga, sizeof(ov7725_qvga)>>1, SCCB_ON);
     }
     for (ix=0; ix<3; ix++) {
-        systemTime_delayMS(100);
+        systemTime_delayMs(100);
         i2c_write(0x30, ov9655_qvga, sizeof(ov9655_qvga)>>1, SCCB_ON);
     }
     initializeHW((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2, _imgWidth, _imgHeight);
     camera_run();
     // invert video as camera is upside down
-    camera_invertVideo();
+    //camera_invertVideo();
 }
 
 /*
@@ -339,7 +339,7 @@ unsigned char** camera_grabVideo(void)
 			moveImage((unsigned char *)DMA_BUF1, (unsigned char *)DMA_BUF2,
 													_videoBuffer[i], _imgWidth, _imgHeight);
 		}
-		systemTime_delayMS(40);
+		systemTime_delayMs(7);
 	}
 	return _videoBufPointer;
 }

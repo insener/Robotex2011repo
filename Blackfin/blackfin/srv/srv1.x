@@ -12,7 +12,7 @@ MEMORY
 
 SECTIONS
 {
-    .sdram.text     : { camera.o(.sdram.text) httpd.o(.sdram.text) i2c.o(.sdram.text) stm_m25p32.o(.sdram.text) printf.o(.sdram.text) *(.gnu.warning) } > ram
+    .sdram.text     : { camera.o(.sdram.text) i2c.o(.sdram.text) stm_m25p32.o(.sdram.text) printf.o(.sdram.text) *(.gnu.warning) } > ram
     .l1code         : { crt0.o (.text) main.o(.text) math.o(.text) malloc.o(.text) srv.o(.text) uart.o(.text) colors.o(.text) jpeg.o(.text) r8x8dct.o(.text) uart.o(.text) setjmp.o(.text) io.o(.text)} > l1code 
     .l1data         :
     {

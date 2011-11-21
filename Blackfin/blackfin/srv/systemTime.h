@@ -30,7 +30,7 @@
 extern void 		systemTime_init(void);
 extern int  		systemTime_readRTC(void);
 extern void 		systemTime_clearRTC(void);
-extern void 		systemTime_delayMS(int delay);
+extern void 		systemTime_delayMs(int delay);
 extern void 		systemTime_delayUS(int delay);
 extern void 		systemTime_delayNS(int delay);
 extern unsigned int systemTime_getSystemTimeBase(void);

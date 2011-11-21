@@ -1,4 +1,4 @@
-CSRCS   = main.c init.c srv.c uart.c camera.c jpeg.c i2c.c stm_m25p32.c httpd.c logic.c\
+CSRCS   = main.c init.c srv.c uart.c camera.c jpeg.c i2c.c stm_m25p32.c logic.c\
   colors.c malloc.c string.c printf.c sdcard.c motion.c io.c timer.c soccer.c remoteControl.c systemTime.c\
   
  

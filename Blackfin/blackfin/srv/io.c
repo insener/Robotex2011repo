@@ -41,15 +41,17 @@ void io_initPeriphery(void)
 
 	*pPORTGIO_DIR   = LED1 | LED2;      					  // LEDs (PG8 and PG9)
 	*pPORTGIO		= 0x0000;								  // clear LED states
-	*pPORTH_FER     = 0x0000;           					  // set portH for GPIO
+	//*pPORTH_FER     = 0x0000;           					  // set portH for GPIO
 	// GPIO outputs are serial flow control, UART2 Tx, and relay control (LASER2)
-	*pPORTHIO_DIR   = UART0_FLOW_CRTL | UART2_TX | LASER2;
-	*pPORTHIO       = 0x0000;           					  // set play output high, all others low
-	*pPORTHIO_INEN  = MATCHPORT_RTS0 | BALL_SENSOR | BATTERY | PLAY_SWITCH_IN; // enable inputs: Matchport RTS0 (H0), ball sensor (H1), battery (H2)
+	//*pPORTHIO_DIR   = UART0_FLOW_CRTL | UART2_TX | LASER2;
+	//*pPORTHIO       = 0x0000;           					  // set play output high, all others low
+	//*pPORTHIO_INEN  = MATCHPORT_RTS0 | BALL_SENSOR | BATTERY ; // enable inputs: Matchport RTS0 (H0), ball sensor (H1), battery (H2)
+	// enable inputs
+	//*pPORTHIO_INEN  = IR_DIST_LEFT | IR_DIST_RIGHT | GOAL_SELECTION | PLAY_SWITCH;
 	//*pPORTHIO_DIR  |= 0x0380;   // set up lasers - note that GPIO-H8 is used for SD SPI select on RCM board
 	//*pPORTHIO |= 0x0100;      // set GPIO-H8 high in case it's used for SD SPI select
 
-	*pPORTHIO_EDGE	 	 = BALL_SENSOR;     		// rising edge detection
+	/**pPORTHIO_EDGE	 	 = BALL_SENSOR;     		// rising edge detection
 	*pPORTHIO_MASKA_SET  = BALL_SENSOR;   	 		// enable pin PH1 channel A interrupt
 	SSYNC;
 	*pSIC_IMASK     	|= IRQ_PFA_PORTH; 	      	// enable interrupt on SIC_IMASK level
@@ -57,7 +59,58 @@ void io_initPeriphery(void)
 	*pEVT11 			 = INTERRUPT_ballSensor; 	// Set interrupt_ballSensor as IVG11 handler
 	SSYNC;
 	//asm volatile ("cli %0; bitset (%0, 11); sti %0; csync;": "+d"(interrupt));  // set *pIMASK for EVT_IVG11
-	*pIMASK				|= EVT_IVG11;
+	*pIMASK				|= EVT_IVG11;*/
+}
+
+/*
+ * Initialize pin as GPIO
+ */
+void io_initGpioPin(int pinType, int port, int pin)
+{
+    switch (pinType)
+    {
+        case ioInput:
+            // set for GPIO, set direction to input and enable input
+            switch (port)
+            {
+                case portF:
+                    *pPORTF_FER &= ~pin;
+                    *pPORTFIO_DIR &= ~pin;
+                    *pPORTFIO_INEN |= pin;
+                    break;
+                case portG:
+                    *pPORTG_FER &= ~pin;
+                    *pPORTGIO_DIR &= ~pin;
+                    *pPORTGIO_INEN |= pin;
+                    break;
+                case portH:
+                    *pPORTH_FER &= ~pin;
+                    *pPORTHIO_DIR &= ~pin;
+                    *pPORTHIO_INEN |= pin;
+                    break;
+            }
+            break;
+        case ioOutput:
+            // set for GPIO, set direction to input and enable input
+            switch (port)
+            {
+                case portF:
+                    *pPORTF_FER &= ~pin;
+                    *pPORTFIO_DIR |= pin;
+                    break;
+                case portG:
+                    *pPORTG_FER &= ~pin;
+                    *pPORTGIO_DIR |= pin;
+                    break;
+                case portH:
+                    *pPORTH_FER &= ~pin;
+                    *pPORTHIO_DIR |= pin;
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 /*
@@ -157,26 +210,88 @@ void io_LED2Toggle(void)
 }
 
 /*
- * Toggle Port H pin
+ * Toggle Port pin
  */
-void io_togglePortHPin(int pin)
+void io_togglePortPin(int port, int pin)
 {
-	*pPORTHIO_TOGGLE = pin;
+	switch(port)
+	{
+        case portF:
+            *pPORTFIO_TOGGLE = pin;
+            break;
+        case portG:
+            *pPORTGIO_TOGGLE = pin;
+            break;
+        case portH:
+            *pPORTHIO_TOGGLE = pin;
+            break;
+        default:
+            break;
+	}
 }
 
 /*
- * Sets Port H pin
+ * Sets Port pin
  */
-void io_setPortHPin(int pin)
+void io_setPortPin(int port, int pin)
 {
-	*pPORTHIO_SET = pin;
+    switch(port)
+    {
+        case portF:
+            *pPORTFIO_SET = pin;
+            break;
+        case portG:
+            *pPORTGIO_SET = pin;
+            break;
+        case portH:
+            *pPORTHIO_SET = pin;
+            break;
+        default:
+            break;
+    }
 }
 
 /*
- * clears Port H pin
+ * clears Port pin
  */
-void io_clearPortHPin(int pin)
+void io_clearPortPin(int port, int pin)
 {
-	*pPORTHIO_CLEAR = pin;
+    switch(port)
+    {
+        case portF:
+            *pPORTFIO_CLEAR = pin;
+            break;
+        case portG:
+            *pPORTGIO_CLEAR = pin;
+            break;
+        case portH:
+            *pPORTHIO_CLEAR = pin;
+            break;
+        default:
+            break;
+    }
 }
 
+/*
+ * Get Port pin value
+ */
+int io_getPortPinValue(int port, int pin)
+{
+    int value;
+    switch(port)
+    {
+        case portF:
+            value = *pPORTFIO & pin;
+            break;
+        case portG:
+            value = *pPORTGIO & pin;
+            break;
+        case portH:
+            value = *pPORTHIO & pin;
+            break;
+        default:
+            value = -1;
+            break;
+    }
+    return value;
+}

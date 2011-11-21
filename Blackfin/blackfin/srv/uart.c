@@ -248,11 +248,11 @@ void uart_uart2ShiftBitOut(void)
 			// send a bit
 			if (_uart2Chars[_uart2ByteCount - 1] & 0x01)
 			{
-				io_setPortHPin(UART2_TX);
+				io_setPortPin(portH, UART2_TX);
 			}
 			else
 			{
-				io_clearPortHPin(UART2_TX);
+				io_clearPortPin(portH, UART2_TX);
 			}
 			// shift next bit for sending
 			_uart2Chars[_uart2ByteCount - 1] = _uart2Chars[_uart2ByteCount - 1] >> 1;
@@ -261,7 +261,7 @@ void uart_uart2ShiftBitOut(void)
 		else if (_uart2ShiftCount == UART2_SHIFT_COUNT - 1)
 		{
 			// stop bit is high
-			io_setPortHPin(UART2_TX);
+			io_setPortPin(portH, UART2_TX);
 			// if last byte, then disable timer
 			if (_uart2ByteCount == 1)
 			{

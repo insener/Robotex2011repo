@@ -14,7 +14,6 @@
  *  GNU General Public License for more details (www.gnu.org/licenses)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "config.h"
 #include "uart.h"
 #include "print.h"
 #include "srv.h"

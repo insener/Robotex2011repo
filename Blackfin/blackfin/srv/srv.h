@@ -3,19 +3,25 @@
 
 #include "config.h"
 
-/* general macros */
-
+//////////////////////////////
+// Public global constant definitions
+//////////////////////////////
 #define countof(a)      (sizeof(a)/sizeof(a[0]))
-
-#define PWM_OFF 0
-#define PWM_PWM 1
-#define PWM_PPM 2
-#define PWM_UART 3
 
 #define FOUR_TWO_ZERO 1
 #define FOUR_TWO_TWO  2
+#define OBSTACLE      0
+#define OBSTACLE_NON  1
 
-
+//////////////////////////////
+// Public global type definitions
+//////////////////////////////
+enum SwitchState
+{
+    switchNotKnown,
+    switchOn,
+    switchOff
+};
 
 /* Misc Init */
 //void init_io ();
@@ -51,7 +57,8 @@ void srv_relayOn(void);
 void srv_relayOff(void);
 
 /* Switch */
-int	 srv_isPlaySwitchOn(void);
+int	srv_getPlaySwitchState(void);
+int srv_isBlueGoalSelected(void);
 
 /* Image */
 void srv_sendFrame(void);
@@ -79,43 +86,9 @@ void ppm2_command ();
 void setPWM (int mleft, int mright);
 
 
-/* Clock */
-/*void initTMR4 ();
-void delayMS (int delay);  // delay up to 100000 millisecs (100 secs)
-void delayUS (int delay);  // delay up to 100000 microseconds (.1 sec)
-void delayNS (int delay);  // delay up to 100000 nanoseconds (.0001 sec)
-*/
+/* Distance sensors */
+void srv_getDistanceSensorResults(int *left, int *right);
 
-/* Globals */
-extern int pwm1_mode, pwm2_mode, pwm1_init, pwm2_init, xwd_init, tilt_init, analog_init;
-extern int lspeed, rspeed, lspeed2, rspeed2, base_speed, base_speed2, lcount, rcount;
-extern int move_start_time, move_stop_time, move_time_mS, robot_moving;
-extern int sonar_data[];
-extern unsigned int frame_diff_flag, horizon_detect_flag, invert_flag;
-extern unsigned int uart1_flag, thumbnail_flag;
-extern unsigned int segmentation_flag, edge_detect_flag, frame_diff_flag, horizon_detect_flag;
-extern unsigned int obstacle_detect_flag;
-extern unsigned int blob_display_flag;
-extern unsigned int blob_display_num;
-extern unsigned int edge_thresh;
-extern unsigned int master;  // SVS master or slave ?
-extern unsigned int stereo_sync_flag;
-extern unsigned int stereo_processing_flag;
-extern int svs_sensor_width_mmx100;
-extern int svs_right_turn_percent;
-extern int svs_turn_tollerance_percent;
-extern int svs_calibration_offset_x, svs_calibration_offset_y;
-extern int svs_centre_of_disortion_x, svs_centre_of_disortion_x;
-extern int svs_scale_num, svs_scale_denom, svs_coeff_degree;
-extern long* svs_coeff;
-extern int svs_width, svs_height;
-extern int svs_enable_horizontal;
-extern int svs_ground_y_percent;
-extern int svs_ground_slope_percent;
-extern int svs_enable_ground_priors;
-extern int svs_enable_mapping;
-extern int svs_disp_left, svs_disp_right, svs_steer;
-extern unsigned char version_string[];
 
 #endif
 

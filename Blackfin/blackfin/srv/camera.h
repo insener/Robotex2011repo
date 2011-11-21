@@ -1,7 +1,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include "config.h"
+//#include "config.h"
 
 //////////////////////////////
 // Public global constant definitions

@@ -27,15 +27,30 @@
 //////////////////////////////
 // Private global functions
 //////////////////////////////
-extern void httpd_request(char firstChar);
 
 //////////////////////////////
 // Private global variables
 //////////////////////////////
-
+int playCommand = PLAY_SOCCER;   // play is in default
 
 /*
- * Listens remote user commands and acts according to commands. The communication is done over WiFi.
+ * Returns play command state
+ */
+int remoteControl_getPlayCommandState(void)
+{
+	return playCommand;
+}
+
+/*
+ * Sets play command state
+ */
+void remoteControl_setPlayCommandState(int command)
+{
+	playCommand = command;
+}
+
+/*
+ * Listens remote user commands and acts according to commands. The communication is done over WiFi/serial cable.
  */
 void remoteControl_run(void)
 {
@@ -45,8 +60,11 @@ void remoteControl_run(void)
     unsigned int ballSensor = 0;
     int time, ballTime = 0;
 
-	// run until play switch is off
-	while(1/*!srv_isPlaySwitchOn()*/)
+    // stop the robot from play
+	motion_stop();
+
+    // run until play switch is set off
+	while(srv_getPlaySwitchState() == switchOff)
 	{
 		if ((systemTime_readRTC() - rtcMs) > 1000)
 		{
@@ -76,6 +94,10 @@ void remoteControl_run(void)
 			//printf("%c", ch);
 			switch (ch)
 			{
+				// resume to play
+				case 'p':
+					playCommand = PLAY_SOCCER;
+				break;
 				case 'V':   // send version string
 					serial_out_version();
 					break;
@@ -99,12 +121,12 @@ void remoteControl_run(void)
 					break;
 				case 'w':
 					// forward
-					motion_moveStraight(100);
+					motion_moveSideBackward(100);
 					printf("#w");
 					break;
 				case 'z':
 					// backward
-					motion_moveStraight(-100);
+					motion_moveSideBackward(-100);
 					printf("#z");
 					break;
 				case 's':
@@ -114,17 +136,13 @@ void remoteControl_run(void)
 					break;
 				case 'a':
 					// left
-					motion_moveSide(-100);
+					motion_moveSideForward(-100);
 					printf("#a");
 					break;
 				case 'd':
 					// right
-					motion_moveSide(100);
+					motion_moveSideBackward(100);
 					printf("#d");
-					break;
-				case 'G':
-				case 'P':
-					httpd_request(ch);
 					break;
 				case 'y':
 					camera_invertVideo();

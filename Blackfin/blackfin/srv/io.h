@@ -36,8 +36,8 @@
 #define BALL_SENSOR			PH11 //  external pin 28
 #define IR_DIST_LEFT        PH12 //  external pin 29
 #define IR_DIST_RIGHT       PH13 //  external pin 30
-#define PLAY_SWITCH_OUT		PH14 //  external pin 31
-#define PLAY_SWITCH_IN		PH15 //  external pin 32
+#define GOAL_SELECTION  	PH14 //  external pin 31
+#define PLAY_SWITCH 		PH15 //  external pin 32
 
 #define DISABLE_BALL_SENSOR_INTERRUPT  *pPORTHIO_MASKA_CLEAR = BALL_SENSOR;
 #define ENABLE_BALL_SENSOR_INTERRUPT   *pPORTHIO_MASKA_SET  = BALL_SENSOR;
@@ -45,7 +45,18 @@
 //////////////////////////////
 // Public global type definitions
 //////////////////////////////
+enum IoType
+{
+    ioInput,
+    ioOutput
+};
 
+enum PortName
+{
+    portF,
+    portG,
+    portH
+};
 
 //////////////////////////////
 // Public global functions
@@ -60,9 +71,11 @@ extern void 		io_LED2Clear(void);
 extern void 		io_LED2Toggle(void);
 extern void			io_enableBallSensorInterrupt(void);
 extern void			io_disableBallSensorInterrupt(void);
-extern void 		io_togglePortHPin(int pin);
-extern void 		io_setPortHPin(int pin);
-extern void 		io_clearPortHPin(int pin);
+extern void         io_initGpioPin(int pinType, int port, int pin);
+extern void 		io_togglePortPin(int port, int pin);
+extern void 		io_setPortPin(int port, int pin);
+extern void 		io_clearPortPin(int port, int pin);
+extern int          io_getPortPinValue(int port, int pin);
 //////////////////////////////
 // Public global variables
 //////////////////////////////

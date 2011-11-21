@@ -144,15 +144,20 @@ void systemTime_clearRTC()
 /*
  * Does the delay in milliseconds. Max value is 100000 milliseconds (100 seconds)
  */
-void systemTime_delayMS(int delay)
+void systemTime_delayMs(int delay)
 {
     int i0;
 
+    // check boundaries
     if ((delay < 0) || (delay > 100000))
+    {
         return;
+    }
     i0 = systemTime_readRTC();
     while (systemTime_readRTC() < (i0 + delay))
-        continue;
+    {
+        asm("nop;");
+    }
 }
 
 /*

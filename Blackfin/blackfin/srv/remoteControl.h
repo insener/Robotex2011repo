@@ -11,7 +11,8 @@
 //////////////////////////////
 // Public global constant definitions
 //////////////////////////////
-
+#define PLAY_SOCCER   1
+#define STOP_SOCCER   0
 
 //////////////////////////////
 // Public global type definitions
@@ -22,6 +23,8 @@
 // Public global functions
 //////////////////////////////
 extern void remoteControl_run(void);
+extern int  remoteControl_getPlayCommandState(void);
+extern void remoteControl_setPlayCommandState(int command);
 
 //////////////////////////////
 // Public global variables

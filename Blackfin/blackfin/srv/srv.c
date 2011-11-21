@@ -14,7 +14,6 @@
  *  GNU General Public License for more details (www.gnu.org/licenses)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "uart.h"
 #include "i2c.h"
 #include "systemTime.h"
 #include "camera.h"
@@ -31,11 +30,23 @@
 #include "io.h"
 
 //////////////////////////////
+// Private global defines
+//////////////////////////////
+#define SWITCH_DEBOUNCE     4
+
+//////////////////////////////
+// Type definitions
+//////////////////////////////
+
+
+//////////////////////////////
 // Private global functions
 //////////////////////////////
 void initIO(void);
 void initRelay(void);
 void initIrBeaconReceivers(void);
+void initDistanceSensors(void);
+void initSwitches(void);
 
 //////////////////////////////
 // Private global variables
@@ -56,51 +67,37 @@ unsigned char frame[] = "0000-ms 000-f 000-d 000-l 000-r";
 
 /* Camera globals */
 unsigned int framecount, ix, overlay_flag;
-unsigned int segmentation_flag, edge_detect_flag, frame_diff_flag, horizon_detect_flag;
-unsigned int obstacle_detect_flag;
-unsigned int blob_display_flag;
-unsigned int blob_display_num;
-unsigned int edge_thresh;
 unsigned char *output_start, *output_end; /* Framebuffer addresses */
 unsigned int image_size; /* JPEG image size */
 unsigned int _processTime;
 unsigned int _debugInfo;
 char _imgHeader[11];
 
-/* Motor globals */
-int lspeed, rspeed, lcount, rcount, lspeed2, rspeed2, base_speed, base_speed2, err1;
-int pwm1_mode, pwm2_mode, pwm1_init, pwm2_init, xwd_init;
-int encoder_flag;
-
-/* IMU globals */
-int x_acc, x_acc0, x_center;
-int y_acc, y_acc0, y_center;
-
-/* Failsafe globals */
-//int failsafe_mode = 0;
-//int lfailsafe, rfailsafe;
-//int failsafe_clock;
-
-/* Sonar globals */
-int sonar_data[5], sonar_flag = 0;
-
-/* random number generator globals */
-unsigned int rand_seed = 0x55555555;
 
 /* General globals */
 unsigned char *cp;
 unsigned int i, j; // Loop counter.
-unsigned int master;  // SVS master or slave ?
-unsigned int uart1_flag = 0;
 
+/* Play switch debouncing*/
+int _playSwitchOnCount;
+int _playSwitchOffCount;
+int _playSwitchState;
 
-void srv_initRobotFunctions()
+/*
+ * Initializes robot functions
+ */
+void srv_initRobotFunctions(void)
 {
-	initRelay();
-	initIrBeaconReceivers();
+	//initRelay();
+	//initIrBeaconReceivers();
+    initDistanceSensors();
+    initSwitches();
 }
 
-void srv_initVariables()
+/*
+ * Initializes variables
+ */
+void srv_initVariables(void)
 {
 	frameSize cameraFrame;
 
@@ -111,9 +108,35 @@ void srv_initVariables()
 
 	overlay_flag = 0;
 	framecount = 0;
+
+	_playSwitchOnCount = 0;
+	_playSwitchOffCount = 0;
+	_playSwitchState = switchNotKnown;
+
 }
 
-/* reset CPU */
+/*
+ * Initializes distance sensors
+ */
+void initDistanceSensors(void)
+{
+    // set HW
+    io_initGpioPin(ioInput, portH, IR_DIST_LEFT);
+    io_initGpioPin(ioInput, portH, IR_DIST_RIGHT);
+}
+
+/*
+ * Initializes switches
+ */
+void initSwitches(void)
+{
+    io_initGpioPin(ioInput, portH, GOAL_SELECTION);
+    io_initGpioPin(ioInput, portH, PLAY_SWITCH);
+}
+
+/*
+ * Reset CPU
+ */
 void reset_cpu() {
     asm(
     "p0.l = 0x0100; "
@@ -188,7 +211,7 @@ void serial_out_flashbuffer () {
 void srv_relayOn()
 {
 	//setPWM(100,100);
-	io_setPortHPin(LASER2);
+	io_setPortPin(portH, LASER2);
     //printf("#l");
 
 }
@@ -200,23 +223,90 @@ void srv_relayOn()
 void srv_relayOff()
 {
 	//setPWM(0,0);
-	io_clearPortHPin(LASER2);
+	io_clearPortPin(portH, LASER2);
 	//printf("#L");
 }
 
 /*
- * Checks if Play switch is switched ON
+ * Checks if Play switch is switched ON. It uses debouncing, so it does
+ * not change the state immediately, but after it is clear that
+ * switch has changed the state.
+ * This function is meant to be called periodically!!!
+ * Returns value in SwitchState enumeration manner
  */
-int srv_isPlaySwitchOn(void)
+int srv_getPlaySwitchState(void)
 {
-	if (*pPORTHIO & PLAY_SWITCH_IN)
+	switch (_playSwitchState)
 	{
-		return 1;
+	    case switchNotKnown:
+	        // read IO pin and update counter
+	        if (io_getPortPinValue(portH, PLAY_SWITCH))
+            {
+                _playSwitchOnCount++;
+                _playSwitchOffCount = 0;
+            }
+            else
+            {
+                _playSwitchOffCount++;
+                _playSwitchOnCount = 0;
+            }
+	        // check if switch has been in stable position long enough
+	        if (_playSwitchOnCount > SWITCH_DEBOUNCE)
+            {
+                _playSwitchState = switchOn;
+            }
+	        if (_playSwitchOffCount > SWITCH_DEBOUNCE)
+	        {
+	            _playSwitchState = switchOff;
+	        }
+	        break;
+	    case switchOff:
+	        _playSwitchOffCount = 0;
+	        // check if the switch have set to opposite position
+	        if (io_getPortPinValue(portH, PLAY_SWITCH))
+            {
+                _playSwitchOnCount++;
+            }
+	        // check if switch has been in opposite position long enough
+            if (_playSwitchOnCount > SWITCH_DEBOUNCE)
+            {
+                _playSwitchState = switchOn;
+            }
+            break;
+	    case switchOn:
+	        _playSwitchOnCount = 0;
+	        // check if the switch have set to opposite position
+	        if (!io_getPortPinValue(portH, PLAY_SWITCH))
+            {
+                _playSwitchOffCount++;
+            }
+	        // check if switch has been in opposite position long enough
+	        if (_playSwitchOffCount > SWITCH_DEBOUNCE)
+            {
+                _playSwitchState = switchOff;
+            }
+            break;
+	    default:
+	        // should not be here
+	        _playSwitchState = switchNotKnown;
+	        break;
 	}
-	else
-	{
-		return 0;
-	}
+    return _playSwitchState;
+}
+
+/*
+ * Checks the status of goal selection pin
+ */
+int srv_isBlueGoalSelected(void)
+{
+    if (io_getPortPinValue(portH, GOAL_SELECTION))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void check_battery() { // 'D' command
@@ -230,10 +320,12 @@ void srv_grabProcessAndSendFrame()
 {
 	int start, stop;
 	GolfBall balls[MAX_GOLF_BALLS];
+	Goal goal;
 
 	camera_grabFrame();
 	//srv_processFrame();
-	_debugInfo = colors_searchGolfBalls((unsigned char *)FRAME_BUF, balls);
+	_debugInfo = colors_searchGolfBalls((unsigned char *)FRAME_BUF, balls, 1);
+	colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorBlue, 1);
 
 	start = systemTime_readRTC();
 	srv_sendFrame();
@@ -358,7 +450,7 @@ void srv_sendRawYUVVideo(unsigned char **srcBuffer)
 	for (i = 0; i < VIDEO_BUF_COUNT; i++)
 	{
 		srv_sendRawYUV(srcBuffer[i]);
-		systemTime_delayMS(500);
+		systemTime_delayMs(500);
 	}
 }
 
@@ -554,5 +646,15 @@ void initIrBeaconReceivers(void)
 	timer_configureTimerInterrupt(TIMER7);
 }
 
+/*
+ * Gets the result of IR distance sensors.
+ * 1 - obstacle not detected
+ * 0 - obstacle detected
+ */
+void srv_getDistanceSensorResults(int *left, int *right)
+{
+    *left = io_getPortPinValue(portH, IR_DIST_LEFT);
+    *right = io_getPortPinValue(portH, IR_DIST_RIGHT);
+}
 
 

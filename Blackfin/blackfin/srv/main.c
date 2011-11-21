@@ -16,15 +16,12 @@
 #include "srv.h"
 #include "print.h"
 #include "string.h"
-#include "config.h"
 #include "camera.h"
 #include "systemTime.h"
-#include "motion.h"
 #include "io.h"
 #include "timer.h"
 #include "debug.h"
 #include "soccer.h"
-#include "colors.h"
 #include "remoteControl.h"
 #include "logic.h"
 
@@ -58,7 +55,7 @@ void initializeModules(void)
 
     init_heap();
     io_initPeriphery(); // Initialise LED, GPIO, serial flow & lasers,
-    //srv_initRobotFunctions();		// motor PWM and IR receiver timers
+    srv_initRobotFunctions();		// motor PWM and IR receiver timers
     systemTime_init();
     timer_init();
     uart_uart0Init(UART0_BAUDRATE);
@@ -66,9 +63,8 @@ void initializeModules(void)
     //uart_uart2Init();
     clear_sdram(); // Clears from 0x00100000 to 0x02000000
     camera_setup(frame);
-    colors_init(); 			// dependant on camera setup
-    srv_initVariables();	// dependant on camera setup
-    logic_init();
+    colors_init(); 			// Dependent on camera setup
+    srv_initVariables();	// Dependent on camera setup
 }
 
 /*
@@ -80,14 +76,19 @@ int main()
 
     while (1)
     {
-    	/*if (srv_isPlaySwitchOn())
-    	{
+    //    if (srv_getPlaySwitchState() == switchOn)
+    //    {
     		soccer_run();
-    	}
-    	else
-    	{*/
+   /*     }
+        else if (srv_getPlaySwitchState() == switchOff)
+        {
     		remoteControl_run();
-    	//}
+        }
+        else
+        {
+            // do nothing
+            systemTime_delayMs(5);
+        }*/
     }
 }
 
