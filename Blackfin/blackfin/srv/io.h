@@ -30,10 +30,11 @@
 #define BATTERY				PH2  //  external pin 19
 #define RELAY_DIRECTION		PH4  //  external pin 21
 #define UART0_FLOW_CRTL		PH6  //  external pin 23
+#define BALL_SENSOR         PH7  //  external pin 24
+#define UART2_TX            PH8  //  external pin 25
 #define LASER2				PH9  //  external pin 26
-#define UART2_TX			PH10 //  external pin 27
-//#define TEST_OUTPUT			UART2_TX
-#define BALL_SENSOR			PH11 //  external pin 28
+#define IR_DIST_FRONT		PH10 //  external pin 27
+#define IR_DIST_BACK		PH11 //  external pin 28
 #define IR_DIST_LEFT        PH12 //  external pin 29
 #define IR_DIST_RIGHT       PH13 //  external pin 30
 #define GOAL_SELECTION  	PH14 //  external pin 31

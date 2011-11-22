@@ -38,6 +38,7 @@ enum LogicState
 int  directionCalc(int* currentZone, int location);
 void setDebugData(int data);
 void moveToPreviousDataInHistory(int *historyIndex);
+void traceBall(int ballCount, GolfBall* balls);
 void attack(int ballCount, GolfBall* balls, Goal* goal);
 
 //////////////////////////////
@@ -73,7 +74,7 @@ void logic_init()
 /*
  * Performs ball tracking strategy
  */
-void logic_traceBall(int ballCount, GolfBall* balls)
+void traceBall(int ballCount, GolfBall* balls)
 {
 	static int historyOfBiggestBall[HISTORY_SIZE] = {0};
 	static int historyOfBallX[HISTORY_SIZE] = {0};
@@ -84,6 +85,13 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 	int ballDiamBiggest = 0;
 	int biggestBallIndex = -1;
 	int ballExists = 0;
+	int frontDist = 0;
+	int backDist = 0;
+	int leftDist = 0;
+	int rightDist = 0;
+
+	// get sensors' readings
+	srv_getDistanceSensorResults(&frontDist, &backDist, &leftDist, &rightDist);
 
 	// find ball with biggest diameter
 	for (i = 0; i < ballCount; i++)
@@ -154,14 +162,36 @@ void logic_traceBall(int ballCount, GolfBall* balls)
 
 	//setDebugData(currentZone);
 
-	// actuate motors according to direction
+	// actuate motors according to direction and sensors
 	if (historyOfDirection[index] > 0)
 	{
-		motion_moveSideBackward(MOVE_RIGHT);
+		if (rightDist == OBSTACLE)
+		{
+		    motion_stop();
+		}
+		else if (backDist == OBSTACLE)
+		{
+		    motion_moveSideForward(MOVE_RIGHT);
+		}
+		else
+		{
+		    motion_moveSideBackward(MOVE_RIGHT);
+		}
 	}
 	else if (historyOfDirection[index] < 0)
 	{
-		motion_moveSideBackward(MOVE_LEFT);
+	    if (leftDist == OBSTACLE)
+        {
+            motion_stop();
+        }
+	    else if (backDist == OBSTACLE)
+	    {
+	        motion_moveSideForward(MOVE_LEFT);
+	    }
+        else
+        {
+            motion_moveSideBackward(MOVE_LEFT);
+        }
 	}
 	else
 	{
@@ -251,8 +281,7 @@ int directionCalc(int *currentZone, int location)
  */
 void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
 {
-    int left, right;
-
+    _logicState = stateAttack;
     switch(_logicState)
     {
         case stateStart:
@@ -260,19 +289,6 @@ void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
             if ((systemTime_readRTC() - _startTime) < 3000)
             {
                 motion_moveSideForward(MOVE_LEFT);
-                srv_getDistanceSensorResults(&left, &right);
-                if (left == OBSTACLE)
-                {
-                    motion_moveSideForward(MOVE_RIGHT);
-                }
-                if (right == OBSTACLE)
-                {
-                    motion_moveSideForward(MOVE_LEFT);
-                }
-                else
-                {
-                    motion_stop();
-                }
 
          /*   }
             else
@@ -310,6 +326,8 @@ void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
         case stateAttack:
             attack(ballCount, balls, goal);
             break;
+        case stateGoalkeeper:
+            traceBall(ballCount, balls);
         default:
             break;
     }
@@ -318,11 +336,11 @@ void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
 
 void attack(int ballCount, GolfBall* balls, Goal* goal)
 {
-    int leftIrDist, rightIrDist;
+    int frontDist, backDist, leftDist, rightDist;
     int i;
     int biggestBallIndex = -1;
 
-    srv_getDistanceSensorResults(&leftIrDist, &rightIrDist);
+    srv_getDistanceSensorResults(&frontDist, &backDist, &leftDist, &rightDist);
     // find ball with biggest diameter
   /*  for (i = 0; i < ballCount; i++)
     {
@@ -344,13 +362,12 @@ void attack(int ballCount, GolfBall* balls, Goal* goal)
 
     if (goal->exists)
     {
-        if (goal->width < 260)
+        if (frontDist == OBSTACLE_NON)
         {
-            setDebugData(goal->width);
             if (goal->x < 130)
             {
                 // move left if allowed
-                if (leftIrDist == OBSTACLE_NON)
+                if (leftDist == OBSTACLE_NON)
                 {
                     motion_moveSideForward(MOVE_LEFT);
                 }
@@ -362,7 +379,7 @@ void attack(int ballCount, GolfBall* balls, Goal* goal)
             else if (goal->x > 190)
             {
                 // move right if allowed
-                if (rightIrDist == OBSTACLE_NON)
+                if (rightDist == OBSTACLE_NON)
                 {
                     motion_moveSideForward(MOVE_RIGHT);
                 }
@@ -384,7 +401,6 @@ void attack(int ballCount, GolfBall* balls, Goal* goal)
     }
     else
     {
-        setDebugData(0);
         // turn to one direction to find goal
         motion_drift(MOVE_RIGHT);
     }

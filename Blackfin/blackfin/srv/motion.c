@@ -68,7 +68,7 @@ void motion_moveStraight(char speed)
 	{
 		// forward
 		//ySpeed = speed;
-		motor3Speed = BASE_SPEED + RIGHT + 20;   // left  motor, right turn direction
+		motor3Speed = BASE_SPEED + RIGHT + 10;  // left  motor, right turn direction
 		motor2Speed = BASE_SPEED + LEFT;        // right motor, left  turn direction
 		motor1Speed = 5;
 	}
@@ -76,7 +76,7 @@ void motion_moveStraight(char speed)
 	{
 		// backward
 		ySpeed = -speed;      		 			// take absolute value
-		motor3Speed = BASE_SPEED + LEFT;  		        // left  motor, left  turn direction
+		motor3Speed = BASE_SPEED + LEFT;  		// left  motor, left  turn direction
 		motor2Speed = BASE_SPEED + RIGHT + 10;  // right motor, right turn direction
 		motor1Speed = 5;  			 // back
 	}

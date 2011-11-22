@@ -121,6 +121,8 @@ void srv_initVariables(void)
 void initDistanceSensors(void)
 {
     // set HW
+    io_initGpioPin(ioInput, portH, IR_DIST_FRONT);
+    io_initGpioPin(ioInput, portH, IR_DIST_BACK);
     io_initGpioPin(ioInput, portH, IR_DIST_LEFT);
     io_initGpioPin(ioInput, portH, IR_DIST_RIGHT);
 }
@@ -651,8 +653,10 @@ void initIrBeaconReceivers(void)
  * 1 - obstacle not detected
  * 0 - obstacle detected
  */
-void srv_getDistanceSensorResults(int *left, int *right)
+void srv_getDistanceSensorResults(int *front, int *back, int *left, int *right)
 {
+    *front = io_getPortPinValue(portH, IR_DIST_FRONT);
+    *back = io_getPortPinValue(portH, IR_DIST_BACK);
     *left = io_getPortPinValue(portH, IR_DIST_LEFT);
     *right = io_getPortPinValue(portH, IR_DIST_RIGHT);
 }

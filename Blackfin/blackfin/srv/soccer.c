@@ -79,7 +79,15 @@ void soccer_run(void)
 			camera_grabFrame();
 			// find golf balls, no markings needed
 			ballCount = colors_searchGolfBalls((unsigned char *)FRAME_BUF, &golfBall[0], NO_MARKING);
-			colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorBlue, NO_MARKING);
+			// find goal dependent on goal switch
+			if (srv_isBlueGoalSelected())
+            {
+			    colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorBlue, NO_MARKING);
+            }
+            else
+            {
+                colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorYellow, NO_MARKING);
+            }
 			// handle logic
 			logic_handleLogic(ballCount, &golfBall[0], &goal);
 		}

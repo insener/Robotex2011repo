@@ -87,7 +87,7 @@ void setPWM (int mleft, int mright);
 
 
 /* Distance sensors */
-void srv_getDistanceSensorResults(int *left, int *right);
+void srv_getDistanceSensorResults(int *front, int *back, int *left, int *right);
 
 
 #endif

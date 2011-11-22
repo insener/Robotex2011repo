@@ -49,7 +49,7 @@
 	#define UART1_BAUDRATE 38400
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 // must be power of 2!
 #define FIFO_LENGTH  64

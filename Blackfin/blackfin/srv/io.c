@@ -273,7 +273,7 @@ void io_clearPortPin(int port, int pin)
 }
 
 /*
- * Get Port pin value
+ * Get Port pin value. Receive either 0 or 1
  */
 int io_getPortPinValue(int port, int pin)
 {
@@ -281,13 +281,34 @@ int io_getPortPinValue(int port, int pin)
     switch(port)
     {
         case portF:
-            value = *pPORTFIO & pin;
+            if ((*pPORTFIO & pin) == pin)
+            {
+                value = 1;
+            }
+            else
+            {
+                value = 0;
+            }
             break;
         case portG:
-            value = *pPORTGIO & pin;
+            if ((*pPORTGIO & pin) == pin)
+            {
+                value = 1;
+            }
+            else
+            {
+                value = 0;
+            }
             break;
         case portH:
-            value = *pPORTHIO & pin;
+            if((*pPORTHIO & pin) == pin)
+            {
+                value = 1;
+            }
+            else
+            {
+                value = 0;
+            }
             break;
         default:
             value = -1;

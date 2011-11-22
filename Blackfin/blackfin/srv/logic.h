@@ -22,7 +22,6 @@
 // Public global functions
 //////////////////////////////
 extern void logic_init(void);
-extern void logic_traceBall(int ballCount, GolfBall* balls);
 extern void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal);
 
 //////////////////////////////
