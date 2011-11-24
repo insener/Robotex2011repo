@@ -21,6 +21,8 @@
 #define SLIDE_WINDOW_COUNT       3
 #define WINDOW_NR   			 _bufferIndexer
 #define NEXT_WINDOW 			 if(_bufferIndexer == 2) { _bufferIndexer = 0; } else { _bufferIndexer++; }
+#define MIDDLE_LEFT             130
+#define MIDDLE_RIGHT            190
 
 //////////////////////////////
 // Type definitions
@@ -32,6 +34,25 @@ enum LogicState
     stateAttack
 };
 
+enum GoalSearchingState
+{
+    stateGoalInit,
+    stateGoalOnLeft,
+    stateGoalOnRight,
+    stateGoalInMiddle,
+    stateGoalScore
+};
+
+enum GoalAttackingState
+{
+    stateMoveStop,
+    stateMoveLeft,
+    stateMoveRight,
+    stateMoveForward,
+    stateMoveBackward
+};
+
+
 //////////////////////////////
 // Private global functions
 //////////////////////////////
@@ -39,7 +60,9 @@ int  directionCalc(int* currentZone, int location);
 void setDebugData(int data);
 void moveToPreviousDataInHistory(int *historyIndex);
 void traceBall(int ballCount, GolfBall* balls);
-void attack(int ballCount, GolfBall* balls, Goal* goal);
+void attack(int ballCount, GolfBall* balls, Goal* goalOpponent, Goal* goalOwn);
+int  getStateAccordingToOpponentGoalPosition(int x);
+int  getStateAccordingToOwnGoalPosition(int x);
 
 //////////////////////////////
 // Private global variables
@@ -279,7 +302,7 @@ int directionCalc(int *currentZone, int location)
 /*
  * Handles the state machine
  */
-void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
+void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goalOpponent, Goal* goalOwn)
 {
     _logicState = stateAttack;
     switch(_logicState)
@@ -324,7 +347,7 @@ void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
             }
             break;
         case stateAttack:
-            attack(ballCount, balls, goal);
+            attack(ballCount, balls, goalOpponent, goalOwn);
             break;
         case stateGoalkeeper:
             traceBall(ballCount, balls);
@@ -334,15 +357,22 @@ void logic_handleLogic(int ballCount, GolfBall* balls, Goal* goal)
 
 }
 
-void attack(int ballCount, GolfBall* balls, Goal* goal)
+/*
+ * Attacking strategy. Keep opponent's goal always in view
+ */
+void attack(int ballCount, GolfBall* balls, Goal* goalOpponent, Goal* goalOwn)
 {
+    static int goalSearchingState = stateGoalInit;
+    static int timeStampScore = -1;
+    static int goalAttacState = stateMoveStop;
     int frontDist, backDist, leftDist, rightDist;
     int i;
+    int ballDiamBiggest = 0;
     int biggestBallIndex = -1;
 
     srv_getDistanceSensorResults(&frontDist, &backDist, &leftDist, &rightDist);
     // find ball with biggest diameter
-  /*  for (i = 0; i < ballCount; i++)
+    for (i = 0; i < ballCount; i++)
     {
         if (balls[i].ballDiam > ballDiamBiggest)
         {
@@ -351,59 +381,246 @@ void attack(int ballCount, GolfBall* balls, Goal* goal)
         }
     }
 
-    // check if ball found
-    if (biggestBallIndex >= 0)
+    // handle state machine
+    switch(goalSearchingState)
     {
-        if (goal->exists)
-        {
-
-        }
-    }*/
-
-    if (goal->exists)
-    {
-        if (frontDist == OBSTACLE_NON)
-        {
-            if (goal->x < 130)
+        case stateGoalInit:
+            // find opponent's goal
+            if (goalOpponent->exists)
             {
-                // move left if allowed
-                if (leftDist == OBSTACLE_NON)
+                goalSearchingState = getStateAccordingToOpponentGoalPosition(goalOpponent->x);
+                goalAttacState = stateMoveForward;
+            }
+            else
+            {
+                // no opponent's goal on the view, maybe own goal is
+                if (goalOwn->exists)
                 {
-                    motion_moveSideForward(MOVE_LEFT);
+                    //turn according to my own goal
+                    goalSearchingState = getStateAccordingToOwnGoalPosition(goalOwn->x);
+                    goalAttacState = stateMoveForward;
                 }
                 else
                 {
-                    motion_moveStraight(MOVE_FORWARD);
+                    // turn right to find any goal
+                    goalSearchingState = stateGoalOnRight;
                 }
             }
-            else if (goal->x > 190)
+            break;
+        case stateGoalOnLeft:
+            // do action
+            if (frontDist == OBSTACLE_NON)
             {
-                // move right if allowed
-                if (rightDist == OBSTACLE_NON)
+                // drift left if allowed
+                if (leftDist == OBSTACLE_NON)
+                {
+                    motion_drift(MOVE_LEFT);
+                }
+                else
                 {
                     motion_moveSideForward(MOVE_RIGHT);
                 }
+            }
+            // get feedback and make new decision
+            if (goalOpponent->exists)
+            {
+                goalSearchingState = getStateAccordingToOpponentGoalPosition(goalOpponent->x);
+                goalAttacState = stateMoveForward;
+                // maybe i scored
+              /*  if (frontDist == OBSTACLE)
+                {
+                    // GOAL!!!
+                    goalSearchingState = stateGoalScore;
+                }*/
+            }
+            // no else, do the same action again until goal is found
+            break;
+        case stateGoalOnRight:
+            // do action
+            if (frontDist == OBSTACLE_NON)
+            {
+                // drift right if allowed
+                if (rightDist == OBSTACLE_NON)
+                {
+                    motion_drift(MOVE_RIGHT);
+                }
                 else
                 {
-                    motion_moveStraight(MOVE_FORWARD);
+                    motion_moveSideForward(MOVE_LEFT);
+                }
+            }
+            // get feedback and make new decision
+            if (goalOpponent->exists)
+            {
+                goalSearchingState = getStateAccordingToOpponentGoalPosition(goalOpponent->x);
+                goalAttacState = stateMoveForward;
+
+                // maybe i scored
+             /*   if (frontDist == OBSTACLE)
+                {
+                    // GOAL!!!
+                    goalSearchingState = stateGoalScore;
+                }*/
+            }
+            else
+            {
+                // right turn can discover own goal
+                if (goalOwn->exists)
+                {
+                    //turn according to my own goal
+                    goalSearchingState = getStateAccordingToOwnGoalPosition(goalOwn->x);
+                    goalAttacState = stateMoveForward;
+                }
+                // else stay in the same state
+            }
+            break;
+        case stateGoalInMiddle:
+            // check if we reached the goal
+            if (frontDist == OBSTACLE_NON)
+            {
+                // do action depending on moving state
+                switch (goalAttacState)
+                {
+                    case stateMoveForward:
+                        motion_moveStraight(MOVE_FORWARD);
+                        break;
+                    case stateMoveBackward:
+                        motion_moveStraight(MOVE_BACKWARD);
+                        break;
+                    case stateMoveLeft:
+                        if (leftDist == OBSTACLE_NON)
+                        {
+                            motion_moveSideForward(MOVE_LEFT);
+                        }
+                        else
+                        {
+                            motion_moveStraight(MOVE_FORWARD);
+                        }
+                        break;
+                    case stateMoveRight:
+                        if (rightDist == OBSTACLE_NON)
+                        {
+                            motion_moveSideForward(MOVE_RIGHT);
+                        }
+                        else
+                        {
+                            motion_moveStraight(MOVE_FORWARD);
+                        }
+                        break;
+                    case stateMoveStop:
+                        motion_stop();
+                        break;
+                    default:
+                        break;
+                }
+                if (goalOpponent->exists)
+                {
+                    // if ball exists
+                    if (biggestBallIndex >= 0)
+                    {
+                        if (balls[biggestBallIndex].ballX < MIDDLE_LEFT)
+                        {
+                            goalAttacState = stateMoveLeft;
+                        }
+                        else if (balls[biggestBallIndex].ballX > MIDDLE_RIGHT)
+                        {
+                            goalAttacState = stateMoveRight;
+                        }
+                        else
+                        {
+                            goalAttacState = stateMoveForward;
+                        }
+                    }
+                    else
+                    {
+                        // move back
+                        goalAttacState = stateMoveBackward;
+                    }
+                }
+                // else - probably a ball is hiding the goal. Continue moving
+
+            }
+            else
+            {
+                goalSearchingState = stateGoalScore;
+            }
+            break;
+        case stateGoalScore:
+            // do action
+            if (backDist == OBSTACLE_NON)
+            {
+                motion_moveStraight(MOVE_BACKWARD);
+                // move back some seconds
+                if (timeStampScore == -1)
+                {
+                    // take initial time stamp
+                    timeStampScore = systemTime_readRTC();
+                }
+                else
+                {
+                    // wait until time elapsed
+                    if ((systemTime_readRTC() - timeStampScore) > 3000)
+                    {
+                        timeStampScore = -1;
+                        goalSearchingState = stateGoalInit;
+                    }
                 }
             }
             else
             {
-                // straight to goal
-                motion_moveStraight(MOVE_FORWARD);
+                goalSearchingState = stateGoalInit;
             }
-        }
-        else
-        {
-            motion_stop();
-        }
+            break;
+        default:
+            // should not be here
+            break;
+    }
+}
+
+/*
+ * Gives the state according to opponent's goal.
+ * Expects that goal is visible and coordinate is between valid range.
+ */
+int getStateAccordingToOpponentGoalPosition(int x)
+{
+    int state;
+    // turn toward opponent goal
+    if (x < MIDDLE_LEFT)
+    {
+        state = stateGoalOnLeft;
+    }
+    else if (x > MIDDLE_RIGHT)
+    {
+        state = stateGoalOnRight;
     }
     else
     {
-        // turn to one direction to find goal
-        motion_drift(MOVE_RIGHT);
+        state = stateGoalInMiddle;
     }
+    return state;
+}
+
+/*
+ * Gives the state according to own goal.
+ * Expects that goal is visible and coordinate is between valid range.
+ */
+int getStateAccordingToOwnGoalPosition(int x)
+{
+    int state;
+    // turn away from own goal
+    if (x < MIDDLE_LEFT)
+    {
+        state = stateGoalOnRight;
+    }
+    else if (x > MIDDLE_RIGHT)
+    {
+        state = stateGoalOnLeft;
+    }
+    else
+    {
+        state = stateGoalOnRight;
+    }
+    return state;
 }
 
 #ifdef DEBUG

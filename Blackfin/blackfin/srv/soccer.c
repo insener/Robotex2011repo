@@ -55,7 +55,8 @@ void soccer_run(void)
 {
 	unsigned int  timeBase, ballCount;
 	GolfBall      golfBall[MAX_GOLF_BALLS];
-	Goal          goal;
+	Goal          goalBlue;
+	Goal          goalYellow;
 	int 		  maxTime = 0;
 
 #ifdef DEBUG
@@ -79,17 +80,20 @@ void soccer_run(void)
 			camera_grabFrame();
 			// find golf balls, no markings needed
 			ballCount = colors_searchGolfBalls((unsigned char *)FRAME_BUF, &golfBall[0], NO_MARKING);
-			// find goal dependent on goal switch
+			// find both goals
+			colors_searchGoal((unsigned char *)FRAME_BUF, &goalBlue, colorBlue, NO_MARKING);
+			colors_searchGoal((unsigned char *)FRAME_BUF, &goalYellow, colorYellow, NO_MARKING);
+			// handle logic (attacking goal specified by switch)
 			if (srv_isBlueGoalSelected())
             {
-			    colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorBlue, NO_MARKING);
+			    // Blue is opponent's, yellow is my own goal
+			    logic_handleLogic(ballCount, &golfBall[0], &goalBlue, &goalYellow);
             }
             else
             {
-                colors_searchGoal((unsigned char *)FRAME_BUF, &goal, colorYellow, NO_MARKING);
+                //  Yellow is opponent's, blue is my own goal
+                logic_handleLogic(ballCount, &golfBall[0], &goalYellow, &goalBlue);
             }
-			// handle logic
-			logic_handleLogic(ballCount, &golfBall[0], &goal);
 		}
 		if (timeBase & SYSTEM_3x_MAIN_LOOP_TIME_BASE)
 		{

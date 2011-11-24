@@ -1145,8 +1145,8 @@ void scanForGoalSearch(unsigned char *inbuf, Goal* goal, int goalColor, int mark
                 // filter goal, 2 out of 3 lines must indicate suitable color
                 if ( ((*(inbuf + lineStart[0]) > colorUMinLimit) && (*(inbuf + lineStart[0]) < colorUMaxLimit)) &&
                         ((*(inbuf + lineStart[1]) > colorUMinLimit) && (*(inbuf + lineStart[1]) < colorUMaxLimit)) &&
-                            ((*(inbuf + lineStart[0]) > colorVMinLimit) && (*(inbuf + lineStart[0]) < colorVMaxLimit)) &&
-                                ((*(inbuf + lineStart[1]) > colorVMinLimit) && (*(inbuf + lineStart[1]) < colorVMaxLimit))
+                            ((*(inbuf + lineStart[0] + 2) > colorVMinLimit) && (*(inbuf + lineStart[0] + 2) < colorVMaxLimit)) &&
+                                ((*(inbuf + lineStart[1] + 2) > colorVMinLimit) && (*(inbuf + lineStart[1] + 2) < colorVMaxLimit))
                     )
                 {
                     line1 = 0;
@@ -1156,8 +1156,8 @@ void scanForGoalSearch(unsigned char *inbuf, Goal* goal, int goalColor, int mark
                 }
                 else if ( ((*(inbuf + lineStart[1]) > colorUMinLimit) && (*(inbuf + lineStart[1]) < colorUMaxLimit)) &&
                               ((*(inbuf + lineStart[2]) > colorUMinLimit) && (*(inbuf + lineStart[2]) < colorUMaxLimit)) &&
-                                  ((*(inbuf + lineStart[1]) > colorVMinLimit) && (*(inbuf + lineStart[1]) < colorVMaxLimit)) &&
-                                      ((*(inbuf + lineStart[2]) > colorVMinLimit) && (*(inbuf + lineStart[2]) < colorVMaxLimit))
+                                  ((*(inbuf + lineStart[1] + 2) > colorVMinLimit) && (*(inbuf + lineStart[1] + 2) < colorVMaxLimit)) &&
+                                      ((*(inbuf + lineStart[2] + 2) > colorVMinLimit) && (*(inbuf + lineStart[2] + 2) < colorVMaxLimit))
                         )
                 {
                     line1 = 1;
@@ -1170,8 +1170,8 @@ void scanForGoalSearch(unsigned char *inbuf, Goal* goal, int goalColor, int mark
                 // find how far the goal goes
                 if ( (*(inbuf + lineStart[line1]) > colorUMinLimit) && (*(inbuf + lineStart[line1]) < colorUMaxLimit) &&
                         ((*(inbuf + lineStart[line2]) > colorUMinLimit) && (*(inbuf + lineStart[line2]) < colorUMaxLimit)) &&
-                            ((*(inbuf + lineStart[line1]) > colorVMinLimit) && (*(inbuf + lineStart[line1]) < colorVMaxLimit)) &&
-                                ((*(inbuf + lineStart[line2]) > colorVMinLimit) && (*(inbuf + lineStart[line2]) < colorVMaxLimit))
+                            ((*(inbuf + lineStart[line1] + 2) > colorVMinLimit) && (*(inbuf + lineStart[line1] + 2) < colorVMaxLimit)) &&
+                                ((*(inbuf + lineStart[line2] + 2) > colorVMinLimit) && (*(inbuf + lineStart[line2] + 2) < colorVMaxLimit))
                     )
                 {
                     goalPieces[goalPieceIndex].width++;
